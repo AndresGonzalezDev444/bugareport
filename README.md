@@ -262,8 +262,6 @@ exiftool -GPSLatitude -GPSLongitude imagen_reporte.jpg
 BugaReport/
 │
 ├── user-panel-mobile/         # App Flutter para ciudadanos
-│   ├── basics_flutter/        # Fundamentos y componentes base
-│   └── imc_calculator/        # Módulos de prueba y prototipado
 │
 ├── admin-panel/               # Panel web para administradores
 │   ├── index.html             # Punto de entrada del panel
