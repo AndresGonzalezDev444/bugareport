@@ -20,6 +20,9 @@ dependencies:
   flutter_map: ^8.1.1
   latlong2: ^0.9.1
 
+  # Geolocalización y permisos de ubicación
+  geolocator: ^13.0.2
+
   # Tipografías Montserrat + Inter
   google_fonts: ^6.2.1
 

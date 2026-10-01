@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>BugaReport necesita tu ubicación para mostrarte los incidentes cercanos y geolocalizar tus reportes en el mapa.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>BugaReport necesita tu ubicación para mostrarte los incidentes cercanos en el mapa.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>BugaReport necesita la cámara para que puedas fotografiar los incidentes que reportes a la Alcaldía.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>BugaReport necesita acceso a tus fotos para adjuntarlas a tus reportes.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>

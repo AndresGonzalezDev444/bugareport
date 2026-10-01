@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bugareport/servicios/servicio_incidentes.dart';
 import 'package:bugareport/modelos/incidente.dart';
+import 'package:bugareport/pantallas/mapa/pantalla_mapa.dart';
 import 'widgets/barra_superior.dart';
 import 'widgets/seccion_bienvenida.dart';
 import 'widgets/tarjeta_mapa.dart';
@@ -60,8 +61,21 @@ class _EstadoPantallaInicio extends State<PantallaInicio> {
             right: 0,
             child: BarraNavegacion(
               indiceSelecionado: _indiceNavActual,
-              alCambiarPestana: (indice) =>
-                  setState(() => _indiceNavActual = indice),
+              alCambiarPestana: (indice) {
+                if (indice == 1) {
+                  // Pestaña Mapa → navegar a pantalla de mapa completo
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const PantallaMapa(),
+                    ),
+                  );
+                } else if (indice == 2) {
+                  // Pestaña Reportar → navegar a crear reporte (próximamente)
+                  // TODO: Navigator.push a pantalla de nuevo reporte
+                } else {
+                  setState(() => _indiceNavActual = indice);
+                }
+              },
             ),
           ),
         ],
