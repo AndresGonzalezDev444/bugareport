@@ -4,7 +4,6 @@ import 'package:bugareport/config/tema_app.dart';
 
 /// Botón individual de categoría usado en la fila de desplazamiento horizontal.
 /// Muestra un ícono en un círculo + nombre de categoría + subtítulo.
-/// Corresponde a los nodos Figma #3826:8787–8817.
 class BotonCategoria extends StatelessWidget {
   final IconData icono;
   final Color colorIcono;

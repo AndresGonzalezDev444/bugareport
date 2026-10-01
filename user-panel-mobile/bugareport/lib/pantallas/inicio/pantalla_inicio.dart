@@ -14,7 +14,6 @@ import 'widgets/barra_navegacion.dart';
 /// Pantalla principal de la app ciudadana BugaReport.
 /// Muestra un mapa OSM en vivo con incidentes de Supabase (estilo Waze),
 /// cuadrícula de acciones rápidas, categorías y barra de emergencia.
-/// Corresponde al frame Figma "BugaReport - Inicio Ciudadano" (#3826:8684).
 class PantallaInicio extends StatefulWidget {
   const PantallaInicio({super.key});
 

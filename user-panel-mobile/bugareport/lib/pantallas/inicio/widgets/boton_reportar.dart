@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:bugareport/config/tema_app.dart';
 
 /// Botón hero grande "Reportar Incidente" — CTA principal de la app.
-/// Corresponde al nodo Figma #3826:8734.
 class BotonReportar extends StatelessWidget {
   final VoidCallback? alTocar;
 

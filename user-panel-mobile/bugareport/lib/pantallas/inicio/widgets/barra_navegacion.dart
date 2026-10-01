@@ -5,7 +5,6 @@ import 'package:bugareport/config/tema_app.dart';
 /// Barra de navegación inferior con 5 pestañas.
 /// La pestaña 3 "Reportar" es el botón circular central elevado.
 /// Pestaña activa por defecto: "Inicio" (índice 0).
-/// Corresponde al nodo Figma #3826:8867.
 class BarraNavegacion extends StatelessWidget {
   final int indiceSelecionado;
   final ValueChanged<int>? alCambiarPestana;

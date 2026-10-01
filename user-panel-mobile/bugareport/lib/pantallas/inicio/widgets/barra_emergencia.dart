@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:bugareport/config/tema_app.dart';
 
 /// Barra de emergencia con "LÍNEA DE EMERGENCIA" y botones de acción.
-/// Fondo rosa, borde rojo. Corresponde al nodo Figma #3826:8828.
+/// Fondo rosa, borde rojo.
 class BarraEmergencia extends StatelessWidget {
   const BarraEmergencia({super.key});
 

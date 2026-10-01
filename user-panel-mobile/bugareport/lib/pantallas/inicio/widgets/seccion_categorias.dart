@@ -4,7 +4,6 @@ import 'package:bugareport/config/tema_app.dart';
 import 'boton_categoria.dart';
 
 /// Sección "Reportes Frecuentes" con fila horizontal de botones de categoría.
-/// Corresponde al nodo Figma #3826:8779.
 class SeccionCategorias extends StatelessWidget {
   const SeccionCategorias({super.key});
 

@@ -3,7 +3,6 @@ import 'package:bugareport/config/tema_app.dart';
 import 'package:bugareport/widgets/compartidos/pastilla_conexion.dart';
 
 /// Barra superior de la app con logo BugaReport, pastilla de conexión y campana.
-/// Corresponde al nodo Figma #3826:8845.
 class BarraSuperior extends StatelessWidget {
   const BarraSuperior({super.key});
 
