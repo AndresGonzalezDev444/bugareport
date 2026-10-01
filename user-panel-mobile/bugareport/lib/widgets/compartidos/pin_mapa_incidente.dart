@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
-import '../../config/app_theme.dart';
-import '../../models/incident.dart';
+import 'package:bugareport/config/tema_app.dart';
+import 'package:bugareport/modelos/incidente.dart';
 
-/// Custom map pin widget colored by incident category.
-/// Renders as a circular pin with an icon, matching the Figma design.
-class IncidentMapPin extends StatelessWidget {
-  final Incident incident;
-  final VoidCallback? onTap;
+/// Widget de pin de mapa coloreado según la categoría del incidente.
+/// Se renderiza como un círculo con ícono y un triángulo apuntador.
+class PinMapaIncidente extends StatelessWidget {
+  final Incidente incidente;
+  final VoidCallback? alTocar;
 
-  const IncidentMapPin({
+  const PinMapaIncidente({
     super.key,
-    required this.incident,
-    this.onTap,
+    required this.incidente,
+    this.alTocar,
   });
 
   @override
   Widget build(BuildContext context) {
-    final color = AppColors.pinForCategory(incident.category);
+    final color = ColoresApp.colorPorCategoria(incidente.categoria);
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: alTocar,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Pin circle with icon
+          // Círculo del pin con ícono
           Container(
             width: 28,
             height: 28,
@@ -47,23 +47,23 @@ class IncidentMapPin extends StatelessWidget {
               ],
             ),
             child: Icon(
-              _iconForCategory(incident.category),
+              _iconoPorCategoria(incidente.categoria),
               color: Colors.white,
               size: 14,
             ),
           ),
-          // Pin triangle pointer
+          // Triángulo apuntador
           CustomPaint(
             size: const Size(10, 6),
-            painter: _PinPointerPainter(color: color),
+            painter: _PintorTrianguloPin(color: color),
           ),
         ],
       ),
     );
   }
 
-  IconData _iconForCategory(String category) {
-    switch (category) {
+  IconData _iconoPorCategoria(String categoria) {
+    switch (categoria) {
       case 'hueco_via':
         return Icons.warning_rounded;
       case 'servicios_publicos':
@@ -78,25 +78,25 @@ class IncidentMapPin extends StatelessWidget {
   }
 }
 
-/// Paints the small triangle pointer below the pin circle.
-class _PinPointerPainter extends CustomPainter {
+/// Pinta el pequeño triángulo inferior del pin.
+class _PintorTrianguloPin extends CustomPainter {
   final Color color;
 
-  _PinPointerPainter({required this.color});
+  _PintorTrianguloPin({required this.color});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
+    final pincel = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
 
-    final path = Path()
+    final trayecto = Path()
       ..moveTo(0, 0)
       ..lineTo(size.width / 2, size.height)
       ..lineTo(size.width, 0)
       ..close();
 
-    canvas.drawPath(path, paint);
+    canvas.drawPath(trayecto, pincel);
   }
 
   @override

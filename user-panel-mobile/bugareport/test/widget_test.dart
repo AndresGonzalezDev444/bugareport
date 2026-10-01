@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bugareport/screens/home/home_screen.dart';
+import 'package:bugareport/pantallas/inicio/pantalla_inicio.dart';
 
 void main() {
-  testWidgets('HomeScreen renders without crashing', (WidgetTester tester) async {
-    // Note: Supabase is not initialized in tests.
-    // Integration tests should be used for full end-to-end testing.
+  testWidgets('PantallaInicio se renderiza sin errores', (WidgetTester tester) async {
+    // Nota: Supabase no se inicializa en tests unitarios.
+    // Usar integration_test para pruebas completas de extremo a extremo.
     await tester.pumpWidget(
-      const MaterialApp(home: HomeScreen()),
+      const MaterialApp(home: PantallaInicio()),
     );
   });
 }

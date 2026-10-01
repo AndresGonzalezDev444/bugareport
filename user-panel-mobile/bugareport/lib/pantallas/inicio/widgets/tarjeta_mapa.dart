@@ -2,27 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../config/app_theme.dart';
-import '../../../../config/app_constants.dart';
-import '../../../../models/incident.dart';
-import '../../../../widgets/shared/incident_map_pin.dart';
+import 'package:bugareport/config/tema_app.dart';
+import 'package:bugareport/config/constantes_app.dart';
+import 'package:bugareport/modelos/incidente.dart';
+import 'package:bugareport/widgets/compartidos/pin_mapa_incidente.dart';
 
-/// Interactive OpenStreetMap card showing live citizen-reported incidents.
-/// Centered on Guadalajara de Buga. Incidents come from Supabase (no hardcoding).
-/// Matches Figma node #3826:8696.
-class MapPreviewCard extends StatelessWidget {
-  final List<Incident> incidents;
+/// Tarjeta de mapa interactivo OpenStreetMap con incidentes ciudadanos en vivo.
+/// Centrado en Guadalajara de Buga. Los incidentes vienen de Supabase (sin hardcodear).
+/// Corresponde al nodo Figma #3826:8696.
+class TarjetaMapa extends StatelessWidget {
+  final List<Incidente> incidentes;
 
-  const MapPreviewCard({super.key, required this.incidents});
+  const TarjetaMapa({super.key, required this.incidentes});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ColoresApp.superficie,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.borderCard.withValues(alpha: 0.6),
+          color: ColoresApp.bordeCard.withValues(alpha: 0.6),
         ),
         boxShadow: [
           BoxShadow(
@@ -37,32 +37,32 @@ class MapPreviewCard extends StatelessWidget {
         height: 176,
         child: Stack(
           children: [
-            // ── OpenStreetMap ──
+            // ── Mapa OpenStreetMap ──
             FlutterMap(
               options: MapOptions(
-                initialCenter: AppConstants.bugaCenter,
-                initialZoom: AppConstants.defaultMapZoom,
+                initialCenter: ConstantesApp.bugaCentro,
+                initialZoom: ConstantesApp.zoomMapaInicial,
                 interactionOptions: const InteractionOptions(
-                  flags: InteractiveFlag.none, // Preview only, no interaction
+                  flags: InteractiveFlag.none, // Solo previsualización
                 ),
               ),
               children: [
-                // OSM Tile Layer
+                // Capa de teselas OSM
                 TileLayer(
-                  urlTemplate: AppConstants.osmTileUrl,
+                  urlTemplate: ConstantesApp.urlTeselaOsm,
                   userAgentPackageName: 'com.bugareport.app',
                 ),
 
-                // Incident markers from database
+                // Marcadores de incidentes desde la base de datos
                 MarkerLayer(
-                  markers: incidents.map((incident) {
+                  markers: incidentes.map((incidente) {
                     return Marker(
-                      point: LatLng(incident.latitude, incident.longitude),
+                      point: LatLng(incidente.latitud, incidente.longitud),
                       width: 28,
                       height: 34,
-                      child: IncidentMapPin(
-                        incident: incident,
-                        onTap: () => _showIncidentTooltip(context, incident),
+                      child: PinMapaIncidente(
+                        incidente: incidente,
+                        alTocar: () => _mostrarDetalleIncidente(context, incidente),
                       ),
                     );
                   }).toList(),
@@ -70,7 +70,7 @@ class MapPreviewCard extends StatelessWidget {
               ],
             ),
 
-            // ── Dark gradient at bottom ──
+            // ── Gradiente oscuro en la parte inferior ──
             Positioned(
               bottom: 0,
               left: 0,
@@ -97,10 +97,10 @@ class MapPreviewCard extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.background.withValues(alpha: 0.95),
+                  color: ColoresApp.fondo.withValues(alpha: 0.95),
                   borderRadius: BorderRadius.circular(9999),
                   border: Border.all(
-                    color: AppColors.borderLight.withValues(alpha: 0.4),
+                    color: ColoresApp.bordeClaro.withValues(alpha: 0.4),
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -117,18 +117,18 @@ class MapPreviewCard extends StatelessWidget {
                       width: 8,
                       height: 8,
                       decoration: const BoxDecoration(
-                        color: AppColors.primary,
+                        color: ColoresApp.primario,
                         shape: BoxShape.circle,
                       ),
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      '${incidents.length} reportes activos cerca',
+                      '${incidentes.length} reportes activos cerca',
                       style: GoogleFonts.inter(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                         height: 14 / 11,
-                        color: AppColors.onSurface,
+                        color: ColoresApp.sobreSuperficie,
                       ),
                     ),
                   ],
@@ -136,7 +136,7 @@ class MapPreviewCard extends StatelessWidget {
               ),
             ),
 
-            // ── Bottom CTA bar ──
+            // ── Barra CTA inferior ──
             Positioned(
               bottom: 8,
               left: 8,
@@ -157,13 +157,13 @@ class MapPreviewCard extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Location label
+                    // Etiqueta de ubicación
                     Row(
                       children: [
                         const Icon(
                           Icons.location_on,
                           size: 13,
-                          color: AppColors.primaryDark,
+                          color: ColoresApp.primarioOscuro,
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -172,15 +172,15 @@ class MapPreviewCard extends StatelessWidget {
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
                             height: 14 / 11,
-                            color: AppColors.onSurface,
+                            color: ColoresApp.sobreSuperficie,
                           ),
                         ),
                       ],
                     ),
-                    // Explore map CTA
+                    // Botón explorar mapa
                     GestureDetector(
                       onTap: () {
-                        // TODO: Navigate to full map screen
+                        // TODO: Navegar a pantalla de mapa completo
                       },
                       child: Row(
                         children: [
@@ -190,13 +190,13 @@ class MapPreviewCard extends StatelessWidget {
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
                               height: 14 / 11,
-                              color: AppColors.primaryDark,
+                              color: ColoresApp.primarioOscuro,
                             ),
                           ),
                           const Icon(
                             Icons.chevron_right,
                             size: 14,
-                            color: AppColors.primaryDark,
+                            color: ColoresApp.primarioOscuro,
                           ),
                         ],
                       ),
@@ -211,9 +211,9 @@ class MapPreviewCard extends StatelessWidget {
     );
   }
 
-  /// Shows a tooltip dialog for the tapped incident.
-  void _showIncidentTooltip(BuildContext context, Incident incident) {
-    final color = AppColors.pinForCategory(incident.category);
+  /// Muestra un bottom sheet con el detalle del incidente tocado.
+  void _mostrarDetalleIncidente(BuildContext context, Incidente incidente) {
+    final color = ColoresApp.colorPorCategoria(incidente.categoria);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -221,7 +221,7 @@ class MapPreviewCard extends StatelessWidget {
         margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: ColoresApp.superficie,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -240,14 +240,11 @@ class MapPreviewCard extends StatelessWidget {
                 Container(
                   width: 10,
                   height: 10,
-                  decoration: BoxDecoration(
-                    color: color,
-                    shape: BoxShape.circle,
-                  ),
+                  decoration: BoxDecoration(color: color, shape: BoxShape.circle),
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  incident.categoryLabel,
+                  incidente.etiquetaCategoria,
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -256,47 +253,41 @@ class MapPreviewCard extends StatelessWidget {
                 ),
                 const Spacer(),
                 Text(
-                  incident.timeAgo,
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    color: AppColors.outline,
-                  ),
+                  incidente.tiempoTranscurrido,
+                  style: GoogleFonts.inter(fontSize: 11, color: ColoresApp.contorno),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
-              incident.title,
+              incidente.titulo,
               style: GoogleFonts.montserrat(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: AppColors.onSurface,
+                color: ColoresApp.sobreSuperficie,
               ),
             ),
-            if (incident.description != null) ...[
+            if (incidente.descripcion != null) ...[
               const SizedBox(height: 4),
               Text(
-                incident.description!,
+                incidente.descripcion!,
                 style: GoogleFonts.inter(
                   fontSize: 13,
-                  color: AppColors.onSurfaceVariant,
+                  color: ColoresApp.sobreSuperficieVariante,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ],
-            if (incident.address != null) ...[
+            if (incidente.direccion != null) ...[
               const SizedBox(height: 8),
               Row(
                 children: [
-                  const Icon(Icons.place, size: 14, color: AppColors.outline),
+                  const Icon(Icons.place, size: 14, color: ColoresApp.contorno),
                   const SizedBox(width: 4),
                   Text(
-                    incident.address!,
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      color: AppColors.outline,
-                    ),
+                    incidente.direccion!,
+                    style: GoogleFonts.inter(fontSize: 12, color: ColoresApp.contorno),
                   ),
                 ],
               ),

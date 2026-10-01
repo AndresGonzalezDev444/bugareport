@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../config/app_theme.dart';
+import 'package:bugareport/config/tema_app.dart';
 
-/// Emergency bar showing "LÍNEA DE EMERGENCIA" with a call button.
-/// Pink background, red border, matches Figma node #3826:8828.
-class EmergencyBar extends StatelessWidget {
-  const EmergencyBar({super.key});
+/// Barra de emergencia con "LÍNEA DE EMERGENCIA" y botones de acción.
+/// Fondo rosa, borde rojo. Corresponde al nodo Figma #3826:8828.
+class BarraEmergencia extends StatelessWidget {
+  const BarraEmergencia({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.emergencyBg,
+        color: ColoresApp.emergenciaFondo,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.3),
+          color: ColoresApp.primario.withValues(alpha: 0.3),
           width: 2,
         ),
         boxShadow: [
@@ -29,15 +29,15 @@ class EmergencyBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Left: icon + texts
+          // Izquierda: ícono + textos
           Row(
             children: [
-              // Phone icon in red circle
+              // Ícono de teléfono en círculo rojo
               Container(
                 width: 40,
                 height: 40,
                 decoration: const BoxDecoration(
-                  color: AppColors.primary,
+                  color: ColoresApp.primario,
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -47,7 +47,7 @@ class EmergencyBar extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              // Text column
+              // Columna de textos
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -61,7 +61,7 @@ class EmergencyBar extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                         height: 16 / 12,
                         letterSpacing: -0.025 * 12,
-                        color: AppColors.primary,
+                        color: ColoresApp.primario,
                       ),
                     ),
                   ),
@@ -71,7 +71,7 @@ class EmergencyBar extends StatelessWidget {
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                       height: 16 / 12,
-                      color: AppColors.onSurfaceVariant,
+                      color: ColoresApp.sobreSuperficieVariante,
                     ),
                   ),
                 ],
@@ -79,24 +79,24 @@ class EmergencyBar extends StatelessWidget {
             ],
           ),
 
-          // Right: action buttons (call + whatsapp)
+          // Derecha: botones de acción (llamar + WhatsApp)
           Row(
             children: [
-              // Call 123 button
-              _ActionButton(
-                icon: Icons.call,
-                color: AppColors.primary,
-                onTap: () {
-                  // TODO: launch url tel:123
+              // Botón llamar 123
+              _BotonAccion(
+                icono: Icons.call,
+                color: ColoresApp.primario,
+                alTocar: () {
+                  // TODO: lanzar url tel:123
                 },
               ),
               const SizedBox(width: 6),
-              // WhatsApp button
-              _ActionButton(
-                icon: Icons.chat,
-                color: AppColors.tertiary,
-                onTap: () {
-                  // TODO: launch WhatsApp with pre-filled location message
+              // Botón WhatsApp
+              _BotonAccion(
+                icono: Icons.chat,
+                color: ColoresApp.terciario,
+                alTocar: () {
+                  // TODO: lanzar WhatsApp con mensaje pre-llenado
                 },
               ),
             ],
@@ -107,21 +107,21 @@ class EmergencyBar extends StatelessWidget {
   }
 }
 
-class _ActionButton extends StatelessWidget {
-  final IconData icon;
+class _BotonAccion extends StatelessWidget {
+  final IconData icono;
   final Color color;
-  final VoidCallback? onTap;
+  final VoidCallback? alTocar;
 
-  const _ActionButton({
-    required this.icon,
+  const _BotonAccion({
+    required this.icono,
     required this.color,
-    this.onTap,
+    this.alTocar,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: alTocar,
       child: Container(
         width: 36,
         height: 36,
@@ -136,7 +136,7 @@ class _ActionButton extends StatelessWidget {
             ),
           ],
         ),
-        child: Icon(icon, color: Colors.white, size: 18),
+        child: Icon(icono, color: Colors.white, size: 18),
       ),
     );
   }

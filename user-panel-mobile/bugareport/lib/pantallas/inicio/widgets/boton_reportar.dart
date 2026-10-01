@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../config/app_theme.dart';
+import 'package:bugareport/config/tema_app.dart';
 
-/// Large burgundy-red "Reportar Incidente" hero button.
-/// Matches Figma node #3826:8734 — the primary CTA of the app.
-class HeroReportButton extends StatelessWidget {
-  final VoidCallback? onTap;
+/// Botón hero grande "Reportar Incidente" — CTA principal de la app.
+/// Corresponde al nodo Figma #3826:8734.
+class BotonReportar extends StatelessWidget {
+  final VoidCallback? alTocar;
 
-  const HeroReportButton({super.key, this.onTap});
+  const BotonReportar({super.key, this.alTocar});
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.primary,
+      color: ColoresApp.primario,
       borderRadius: BorderRadius.circular(12),
       elevation: 0,
       child: InkWell(
-        onTap: onTap ?? () {
-          // TODO: Navigate to create report screen
+        onTap: alTocar ?? () {
+          // TODO: Navegar a pantalla de crear reporte
         },
         borderRadius: BorderRadius.circular(12),
         child: Container(
@@ -26,7 +26,7 @@ class HeroReportButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             boxShadow: const [
               BoxShadow(
-                color: AppColors.primaryShadow,
+                color: ColoresApp.primarioSombra,
                 blurRadius: 16,
                 offset: Offset(0, 6),
               ),
@@ -35,10 +35,10 @@ class HeroReportButton extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Left: icon + text
+              // Izquierda: ícono + texto
               Row(
                 children: [
-                  // Camera icon in glass container
+                  // Ícono de cámara en contenedor translúcido
                   Container(
                     width: 40,
                     height: 40,
@@ -53,7 +53,7 @@ class HeroReportButton extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  // Text column
+                  // Columna de texto
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -80,7 +80,7 @@ class HeroReportButton extends StatelessWidget {
                   ),
                 ],
               ),
-              // Right arrow
+              // Flecha derecha
               const Icon(
                 Icons.arrow_forward_ios,
                 color: Colors.white,

@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import '../../../../config/app_theme.dart';
-import '../../../../widgets/shared/connectivity_pill.dart';
+import 'package:bugareport/config/tema_app.dart';
+import 'package:bugareport/widgets/compartidos/pastilla_conexion.dart';
 
-/// Top app bar matching the Figma design:
-/// Logo BugaReport (left) + Connectivity pill + notification bell (right).
-class BugaTopAppBar extends StatelessWidget {
-  const BugaTopAppBar({super.key});
+/// Barra superior de la app con logo BugaReport, pastilla de conexión y campana.
+/// Corresponde al nodo Figma #3826:8845.
+class BarraSuperior extends StatelessWidget {
+  const BarraSuperior({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: ColoresApp.fondo,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -26,34 +26,34 @@ class BugaTopAppBar extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Logo BugaReport from assets
+            // Logo BugaReport desde assets
             Image.asset(
               'assets/images/logo-buga-report.png',
               height: 40,
               fit: BoxFit.contain,
             ),
 
-            // Right side: connectivity pill + notifications
+            // Derecha: pastilla de conexión + notificaciones
             Row(
               children: [
-                const ConnectivityPill(isOnline: true),
+                const PastillaConexion(enLinea: true),
                 const SizedBox(width: 4),
-                // Notification bell with badge
+                // Campana de notificaciones con badge
                 Stack(
                   children: [
                     IconButton(
                       onPressed: () {
-                        // TODO: Navigate to notifications
+                        // TODO: Navegar a notificaciones
                       },
                       icon: const Icon(
                         Icons.notifications_outlined,
-                        color: AppColors.onSurfaceVariant,
+                        color: ColoresApp.sobreSuperficieVariante,
                         size: 20,
                       ),
                       padding: const EdgeInsets.all(8),
                       constraints: const BoxConstraints(),
                     ),
-                    // Red notification dot
+                    // Punto rojo de notificación
                     Positioned(
                       top: 6,
                       right: 6,
@@ -61,10 +61,10 @@ class BugaTopAppBar extends StatelessWidget {
                         width: 8,
                         height: 8,
                         decoration: BoxDecoration(
-                          color: AppColors.primary,
+                          color: ColoresApp.primario,
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: AppColors.background,
+                            color: ColoresApp.fondo,
                             width: 2,
                           ),
                         ),

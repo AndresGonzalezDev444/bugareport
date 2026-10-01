@@ -1,38 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../config/app_theme.dart';
+import 'package:bugareport/config/tema_app.dart';
 
-/// Individual category button used in the horizontal scroll row.
-/// Shows an icon in a circle + category name + subtitle.
-/// Matches Figma nodes #3826:8787–8817.
-class CategoryButton extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String label;
-  final String subtitle;
-  final VoidCallback? onTap;
+/// Botón individual de categoría usado en la fila de desplazamiento horizontal.
+/// Muestra un ícono en un círculo + nombre de categoría + subtítulo.
+/// Corresponde a los nodos Figma #3826:8787–8817.
+class BotonCategoria extends StatelessWidget {
+  final IconData icono;
+  final Color colorIcono;
+  final String etiqueta;
+  final String subtitulo;
+  final VoidCallback? alTocar;
 
-  const CategoryButton({
+  const BotonCategoria({
     super.key,
-    required this.icon,
-    required this.iconColor,
-    required this.label,
-    required this.subtitle,
-    this.onTap,
+    required this.icono,
+    required this.colorIcono,
+    required this.etiqueta,
+    required this.subtitulo,
+    this.alTocar,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: alTocar,
       child: Container(
         width: 112,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: ColoresApp.superficie,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: AppColors.borderLight.withValues(alpha: 0.4),
+            color: ColoresApp.bordeClaro.withValues(alpha: 0.4),
           ),
           boxShadow: [
             BoxShadow(
@@ -45,14 +45,14 @@ class CategoryButton extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Icon in a circular container
+            // Ícono en contenedor circular
             Container(
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: AppColors.categoryIconBg,
+                color: ColoresApp.iconoCategoriaBg,
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.categoryIconBorder),
+                border: Border.all(color: ColoresApp.iconoCategoriaBorde),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.05),
@@ -62,33 +62,33 @@ class CategoryButton extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Icon(icon, color: iconColor, size: 20),
+              child: Icon(icono, color: colorIcono, size: 20),
             ),
 
             const SizedBox(height: 8),
 
-            // Category label
+            // Etiqueta de la categoría
             Text(
-              label,
+              etiqueta,
               style: GoogleFonts.inter(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
                 height: 14 / 11,
-                color: AppColors.onSurface,
+                color: ColoresApp.sobreSuperficie,
               ),
               textAlign: TextAlign.center,
             ),
 
             const SizedBox(height: 2),
 
-            // Subtitle
+            // Subtítulo
             Text(
-              subtitle,
+              subtitulo,
               style: GoogleFonts.inter(
                 fontSize: 10,
                 fontWeight: FontWeight.w400,
                 height: 15 / 10,
-                color: AppColors.outline,
+                color: ColoresApp.contorno,
               ),
               textAlign: TextAlign.center,
             ),

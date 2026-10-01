@@ -25,6 +25,7 @@ dependencies:
 
   # Variables de entorno seguras
   flutter_dotenv: ^5.2.1
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -38,3 +39,8 @@ flutter:
   assets:
     - assets/images/
     - .env
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/icon-app.jpg"
