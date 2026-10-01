@@ -1,0 +1,42 @@
+:root {
+    background-color: black;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+}
+
+a{
+    color: white;
+    text-decoration: none;
+}
+
+h1{
+    font-size: 30px;
+    text-align: center;
+    font-weight: bold;
+}
+
+#Report{
+    color: purple;
+}
+
+.header{
+    display: grid;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav-links ul{
+    display: flex;
+    list-style: none;
+}
+
+.nav-links li{
+    margin: 0 1rem;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.nav-links a:hover{
+    color: purple;
+}
