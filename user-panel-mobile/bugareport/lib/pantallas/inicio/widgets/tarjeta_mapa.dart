@@ -8,8 +8,7 @@ import 'package:bugareport/modelos/incidente.dart';
 import 'package:bugareport/widgets/compartidos/pin_mapa_incidente.dart';
 
 /// Tarjeta de mapa interactivo OpenStreetMap con incidentes ciudadanos en vivo.
-/// Centrado en Guadalajara de Buga. Los incidentes vienen de Supabase (sin hardcodear).
-/// Corresponde al nodo Figma #3826:8696.
+/// Centrado en Guadalajara de Buga. Los incidentes vienen de Supabase.
 class TarjetaMapa extends StatelessWidget {
   final List<Incidente> incidentes;
 
@@ -180,7 +179,7 @@ class TarjetaMapa extends StatelessWidget {
                     // Botón explorar mapa
                     GestureDetector(
                       onTap: () {
-                        // TODO: Navegar a pantalla de mapa completo
+                        // tod0: Navegar a pantalla de mapa completo
                       },
                       child: Row(
                         children: [
