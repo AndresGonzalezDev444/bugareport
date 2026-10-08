@@ -13,7 +13,7 @@ class SeccionBienvenida extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 8),
+          padding: const EdgeInsets.only(top: 50),
           child: Text(
             'Hola, ciudadano',
             style: GoogleFonts.montserrat(

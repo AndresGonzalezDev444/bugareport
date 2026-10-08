@@ -7,7 +7,7 @@ import 'pantallas/inicio/pantalla_inicio.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Carga el archivo .env (está en .gitignore — nunca llega a GitHub)
+  // Carga el archivo .env
   await dotenv.load(fileName: '.env');
 
   // Inicializa Supabase con las credenciales del .env
