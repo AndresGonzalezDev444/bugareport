@@ -23,12 +23,36 @@ dependencies:
   # Geolocalización y permisos de ubicación
   geolocator: ^13.0.2
 
+  # Almacenamiento persistente (consentimiento legal, preferencias)
+  shared_preferences: ^2.3.4
+
+  # Almacenamiento seguro (token JWT de sesión)
+  flutter_secure_storage: ^9.2.4
+
+  # Renderizado de Markdown (documento legal offline)
+  flutter_markdown_plus: ^1.0.12
+
   # Tipografías Montserrat + Inter
   google_fonts: ^6.2.1
 
   # Variables de entorno seguras
   flutter_dotenv: ^5.2.1
   flutter_launcher_icons: ^0.14.4
+
+  # HU5 — Conectividad en tiempo real
+  connectivity_plus: ^6.1.1
+
+  # HU4 — Ajustes / Notificaciones locales
+  flutter_local_notifications: ^19.0.3
+  package_info_plus: ^8.2.1
+
+  # HU6 — Reporte con foto (cámara, galería, compresión)
+  image_picker: ^1.1.2
+  image: ^4.5.3
+  path: ^1.9.1
+
+  # Abrir URLs externas (descarga de actualización)
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
@@ -41,6 +65,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/legal/
     - .env
 
 flutter_launcher_icons:

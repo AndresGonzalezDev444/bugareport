@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:bugareport/servicios/servicio_incidentes.dart';
 import 'package:bugareport/modelos/incidente.dart';
 import 'package:bugareport/pantallas/mapa/pantalla_mapa.dart';
+import 'package:bugareport/config/rutas_app.dart';
 import 'widgets/barra_superior.dart';
 import 'widgets/seccion_bienvenida.dart';
 import 'widgets/tarjeta_mapa.dart';
@@ -63,15 +64,15 @@ class _EstadoPantallaInicio extends State<PantallaInicio> {
               indiceSelecionado: _indiceNavActual,
               alCambiarPestana: (indice) {
                 if (indice == 1) {
-                  // Pestaña Mapa → navegar a pantalla de mapa completo
                   Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const PantallaMapa(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const PantallaMapa()),
                   );
                 } else if (indice == 2) {
-                  // Pestaña Reportar → navegar a crear reporte (próximamente)
-                  // TODO: Navigator.push a pantalla de nuevo reporte
+                  // Pestaña Reportar → formulario de nuevo reporte
+                  Navigator.of(context).pushNamed(RutasApp.nuevoReporte);
+                } else if (indice == 4) {
+                  // Pestaña Perfil → pantalla de ajustes
+                  Navigator.of(context).pushNamed(RutasApp.ajustes);
                 } else {
                   setState(() => _indiceNavActual = indice);
                 }

@@ -35,7 +35,7 @@ class BarraSuperior extends StatelessWidget {
             // Derecha: pastilla de conexión + notificaciones
             Row(
               children: [
-                const PastillaConexion(enLinea: true),
+                const PastillaConexion(),
                 const SizedBox(width: 4),
                 // Campana de notificaciones con badge
                 Stack(
