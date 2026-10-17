@@ -13,6 +13,7 @@ import 'pantallas/inicio/pantalla_inicio.dart';
 import 'pantallas/mapa/pantalla_mapa.dart';
 import 'pantallas/ajustes/pantalla_ajustes.dart';
 import 'pantallas/reportar/pantalla_nuevo_reporte.dart';
+import 'pantallas/mis_reportes/pantalla_mis_reportes.dart';
 import 'servicios/servicio_notificaciones.dart';
 
 Future<void> main() async {
@@ -57,7 +58,21 @@ class AplicacionBugaReport extends StatelessWidget {
         RutasApp.inicio: (_) => const PantallaInicio(),
         RutasApp.mapa: (_) => const PantallaMapa(),
         RutasApp.ajustes: (_) => const PantallaAjustes(),
-        RutasApp.nuevoReporte: (_) => const PantallaNuevoReporte(),
+        RutasApp.misReportes: (_) => const PantallaMisReportes(),
+      },
+
+      // ── Rutas con argumentos (nuevoReporte acepta {categoria}) ──
+      onGenerateRoute: (settings) {
+        if (settings.name == RutasApp.nuevoReporte) {
+          final args = settings.arguments as Map<String, dynamic>?;
+          return MaterialPageRoute(
+            builder: (_) => PantallaNuevoReporte(
+              categoriaInicial: args?['categoria'] as String?,
+            ),
+            settings: settings,
+          );
+        }
+        return null;
       },
 
       // ── Ruta de fallback para rutas desconocidas ──

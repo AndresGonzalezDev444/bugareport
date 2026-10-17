@@ -5,7 +5,10 @@ import 'boton_categoria.dart';
 
 /// Sección "Reportes Frecuentes" con fila horizontal de botones de categoría.
 class SeccionCategorias extends StatelessWidget {
-  const SeccionCategorias({super.key});
+  /// Llamado cuando el usuario toca una categoría — recibe la clave (ej. 'hueco_via').
+  final void Function(String clave)? alSeleccionarCategoria;
+
+  const SeccionCategorias({super.key, this.alSeleccionarCategoria});
 
   static const _categorias = [
     _DatosCategoria(
@@ -91,7 +94,7 @@ class SeccionCategorias extends StatelessWidget {
                 etiqueta: categoria.etiqueta,
                 subtitulo: categoria.subtitulo,
                 alTocar: () {
-                  // TODO: Navegar a nuevo reporte con categoría pre-seleccionada
+                  alSeleccionarCategoria?.call(categoria.clave);
                 },
               );
             },

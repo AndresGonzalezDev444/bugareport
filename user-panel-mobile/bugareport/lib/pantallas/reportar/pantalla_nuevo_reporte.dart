@@ -10,6 +10,8 @@ import 'package:bugareport/servicios/servicio_ubicacion.dart';
 import 'package:bugareport/servicios/servicio_almacenamiento.dart';
 import 'package:bugareport/servicios/servicio_logger.dart';
 import 'package:bugareport/servicios/servicio_conectividad.dart';
+import 'package:bugareport/servicios/servicio_borrador.dart';
+import 'package:bugareport/servicios/servicio_exif.dart';
 import 'widgets/selector_foto.dart';
 
 
@@ -23,7 +25,10 @@ import 'widgets/selector_foto.dart';
 /// 5. Si hay red: sube foto → inserta incidente → diálogo éxito
 /// 6. Si no hay red: guarda borrador local (SharedPreferences)
 class PantallaNuevoReporte extends StatefulWidget {
-  const PantallaNuevoReporte({super.key});
+  /// Categoría pre-seleccionada (HU8: accesos rápidos desde inicio).
+  final String? categoriaInicial;
+
+  const PantallaNuevoReporte({super.key, this.categoriaInicial});
 
   @override
   State<PantallaNuevoReporte> createState() => _EstadoPantallaNuevoReporte();
@@ -36,7 +41,7 @@ class _EstadoPantallaNuevoReporte extends State<PantallaNuevoReporte> {
 
   // ── Estado del formulario ──
   File? _foto;
-  String _categoriaSeleccionada = 'hueco_via';
+  late String _categoriaSeleccionada;
   String _severidadSeleccionada = 'media';
   double? _latitud;
   double? _longitud;
@@ -45,14 +50,20 @@ class _EstadoPantallaNuevoReporte extends State<PantallaNuevoReporte> {
   bool _cargandoUbicacion = false;
   bool _enviando = false;
   String? _errorFoto;
+  bool _tieneBorrador = false; // HU9: hay borrador guardado
 
   // ── Servicios ──
   final _svcIncidentes = ServicioIncidentes();
+  final _svcBorrador   = ServicioBorrador.instancia;
 
   @override
   void initState() {
     super.initState();
+    // HU8: pre-seleccionar categoría si viene de acceso rápido
+    _categoriaSeleccionada = widget.categoriaInicial ?? 'hueco_via';
     _obtenerUbicacion();
+    _verificarBorrador(); // HU9: ofrecer recuperar borrador
+    _configurarAutoGuardado(); // HU9: auto-guardar al escribir
   }
 
   @override
@@ -60,6 +71,118 @@ class _EstadoPantallaNuevoReporte extends State<PantallaNuevoReporte> {
     _ctrlTitulo.dispose();
     _ctrlDescripcion.dispose();
     super.dispose();
+  }
+
+  // ── HU9: Borrador ──
+
+  /// Verifica si hay un borrador y lo ofrece al usuario.
+  Future<void> _verificarBorrador() async {
+    final hay = await _svcBorrador.tieneBorrador();
+    if (!hay || !mounted) return;
+
+    setState(() => _tieneBorrador = true);
+
+    // Mostrar SnackBar con acción
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Tienes un borrador guardado. ¿Deseas continuarlo?',
+          style: GoogleFonts.inter(fontSize: 13),
+        ),
+        backgroundColor: ColoresApp.primario,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 8),
+        action: SnackBarAction(
+          label: 'Recuperar',
+          textColor: Colors.white,
+          onPressed: _recuperarBorrador,
+        ),
+      ),
+    );
+  }
+
+  /// Carga los datos del borrador en el formulario.
+  Future<void> _recuperarBorrador() async {
+    final datos = await _svcBorrador.cargarBorrador();
+    if (datos == null || !mounted) return;
+
+    setState(() {
+      _ctrlTitulo.text      = datos['titulo']      ?? '';
+      _ctrlDescripcion.text = datos['descripcion'] ?? '';
+      _categoriaSeleccionada = datos['categoria']  ?? 'hueco_via';
+      _severidadSeleccionada = datos['severidad']  ?? 'media';
+
+      // Recuperar foto si la ruta aún existe
+      final ruta = datos['rutaFoto'];
+      if (ruta != null && File(ruta).existsSync()) {
+        _foto = File(ruta);
+      }
+
+      // Recuperar coordenadas
+      final lat = double.tryParse(datos['latitud'] ?? '');
+      final lon = double.tryParse(datos['longitud'] ?? '');
+      if (lat != null && lon != null) {
+        _latitud  = lat;
+        _longitud = lon;
+      }
+
+      _tieneBorrador = false;
+    });
+
+    _mostrarSnackBar('Borrador recuperado.', esError: false);
+  }
+
+  /// Descarta el borrador con confirmación.
+  Future<void> _descartarBorrador() async {
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Descartar borrador',
+            style: GoogleFonts.montserrat(fontWeight: FontWeight.w700)),
+        content: Text(
+          '¿Deseas eliminar el borrador guardado? Esta acción no se puede deshacer.',
+          style: GoogleFonts.inter(fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text('Descartar',
+                style: TextStyle(color: ColoresApp.error)),
+          ),
+        ],
+      ),
+    );
+    if (confirmar == true) {
+      await _svcBorrador.descartarBorrador();
+      if (mounted) setState(() => _tieneBorrador = false);
+      if (mounted) _mostrarSnackBar('Borrador descartado.', esError: false);
+    }
+  }
+
+  /// Configura listeners de auto-guardado en los controladores de texto.
+  void _configurarAutoGuardado() {
+    _ctrlTitulo.addListener(_guardarBorradorSiHayCambios);
+    _ctrlDescripcion.addListener(_guardarBorradorSiHayCambios);
+  }
+
+  void _guardarBorradorSiHayCambios() {
+    // Solo guardar si hay contenido significativo
+    if (_ctrlTitulo.text.trim().length < 3) return;
+    _svcBorrador.guardarBorrador(
+      titulo:      _ctrlTitulo.text,
+      descripcion: _ctrlDescripcion.text,
+      categoria:   _categoriaSeleccionada,
+      severidad:   _severidadSeleccionada,
+      rutaFoto:    _foto?.path,
+      latitud:     _latitud,
+      longitud:    _longitud,
+    );
   }
 
   // ── Obtener ubicación GPS ──
@@ -124,15 +247,33 @@ class _EstadoPantallaNuevoReporte extends State<PantallaNuevoReporte> {
     setState(() => _enviando = true);
 
     try {
+      // HU7: validar antigüedad de la foto por EXIF (antes de subir)
+      try {
+        await ServicioExif.validarAntiguedad(_foto!);
+      } on ExcepcionFotoMuyAntigua catch (e) {
+        if (mounted) _mostrarSnackBar(e.mensajeAmigable, esError: true);
+        return;
+      }
+
       // Verificar conectividad
       final hayRed = await ServicioConectividad.instancia.tieneConexion();
       if (!hayRed) {
+        // HU9: guardar borrador y notificar
+        await _svcBorrador.guardarBorrador(
+          titulo:      _ctrlTitulo.text,
+          descripcion: _ctrlDescripcion.text,
+          categoria:   _categoriaSeleccionada,
+          severidad:   _severidadSeleccionada,
+          rutaFoto:    _foto?.path,
+          latitud:     _latitud,
+          longitud:    _longitud,
+        );
         if (mounted) {
+          setState(() => _tieneBorrador = true);
           _mostrarSnackBar(
-            'Sin conexión. El reporte se guardará como borrador.',
+            'Sin conexión. Tu reporte fue guardado como borrador.',
             esError: false,
           );
-          // TODO: guardar borrador local (implementado como ticket separado)
         }
         return;
       }
@@ -174,8 +315,11 @@ class _EstadoPantallaNuevoReporte extends State<PantallaNuevoReporte> {
         actualizadoEn: DateTime.now(),
       );
 
-      // Insertar en Supabase (errores manejados en el catch de abajo)
+      // Insertar en Supabase
       await _svcIncidentes.crearIncidente(nuevoIncidente);
+
+      // HU9: descartar borrador al enviar exitosamente
+      await _svcBorrador.descartarBorrador();
 
       if (mounted) {
         _mostrarDialogoExito();
@@ -299,7 +443,7 @@ class _EstadoPantallaNuevoReporte extends State<PantallaNuevoReporte> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 1. Foto
-              _seccion('📸 Evidencia Fotográfica *'),
+              _seccion('Evidencia Fotográfica *', Icons.camera_alt_outlined),
               const SizedBox(height: 8),
               SelectorFoto(
                 fotoSeleccionada: _foto,
@@ -314,14 +458,14 @@ class _EstadoPantallaNuevoReporte extends State<PantallaNuevoReporte> {
               const SizedBox(height: 20),
 
               // 2. Info del incidente
-              _seccion('📌 Información del Incidente'),
+              _seccion('Información del Incidente', Icons.info_outline),
               const SizedBox(height: 8),
               _construirCardInfo(),
 
               const SizedBox(height: 20),
 
               // 3. Ubicación
-              _seccion('📍 Ubicación del Incidente'),
+              _seccion('Ubicación del Incidente', Icons.location_on_outlined),
               const SizedBox(height: 8),
               _construirCardUbicacion(),
 
@@ -369,6 +513,14 @@ class _EstadoPantallaNuevoReporte extends State<PantallaNuevoReporte> {
         ),
       ),
       actions: [
+        // Botón descartar borrador (solo visible si hay borrador)
+        if (_tieneBorrador)
+          IconButton(
+            icon: const Icon(Icons.delete_outline, size: 20),
+            color: ColoresApp.error,
+            tooltip: 'Descartar borrador',
+            onPressed: _descartarBorrador,
+          ),
         Container(
           margin: const EdgeInsets.only(right: 16),
           width: 32,
@@ -384,14 +536,22 @@ class _EstadoPantallaNuevoReporte extends State<PantallaNuevoReporte> {
     );
   }
 
-  Widget _seccion(String texto) {
-    return Text(
-      texto,
-      style: GoogleFonts.montserrat(
-        fontSize: 13,
-        fontWeight: FontWeight.w700,
-        color: ColoresApp.primarioOscuro,
-      ),
+  Widget _seccion(String texto, [IconData? icono]) {
+    return Row(
+      children: [
+        if (icono != null) ...[
+          Icon(icono, size: 16, color: ColoresApp.primarioOscuro),
+          const SizedBox(width: 6),
+        ],
+        Text(
+          texto,
+          style: GoogleFonts.montserrat(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: ColoresApp.primarioOscuro,
+          ),
+        ),
+      ],
     );
   }
 
@@ -455,10 +615,10 @@ class _EstadoPantallaNuevoReporte extends State<PantallaNuevoReporte> {
           _selectorDropdown<String>(
             valor: _severidadSeleccionada,
             opciones: const [
-              ('baja', '🟢 Baja — No urgente'),
-              ('media', '🟡 Media — Requiere atención'),
-              ('alta', '🟠 Alta — Afecta la vía'),
-              ('critico', '🔴 Crítico — Peligro inmediato'),
+              ('baja', 'Baja — No urgente'),
+              ('media', 'Media — Requiere atención'),
+              ('alta', 'Alta — Afecta la vía'),
+              ('critico', 'Crítico — Peligro inmediato'),
             ],
             alCambiar: (v) {
               if (v != null) setState(() => _severidadSeleccionada = v);

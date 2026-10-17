@@ -1,76 +1,72 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:bugareport/config/tema_app.dart';
+import 'package:bugareport/servicios/servicio_ubicacion.dart';
 
-/// Barra de emergencia con "LÍNEA DE EMERGENCIA" y botones de acción.
-/// Fondo rosa, borde rojo.
+/// Sección de emergencia expandida con llamadas directas + WhatsApp con ubicación.
+///
+/// Números oficiales de emergencia Guadalajara de Buga, Valle del Cauca.
 class BarraEmergencia extends StatelessWidget {
   const BarraEmergencia({super.key});
+
+  // ── Números reales de Buga ──
+  static const _lineas = [
+    _LineaEmergencia('Policía', '123', Icons.local_police_outlined, Color(0xFF1A237E)),
+    _LineaEmergencia('Bomberos', '119', Icons.local_fire_department_outlined, Color(0xFFB71C1C)),
+    _LineaEmergencia('Cruz Roja', '132', Icons.medical_services_outlined, Color(0xFFC62828)),
+    _LineaEmergencia('Def. Civil', '144', Icons.security_outlined, Color(0xFF1B5E20)),
+  ];
+
+  static const String _numeroWhatsApp = '573132640001'; // Alcaldía Buga – confirmar
+  static const String _mensajePredeterminado =
+      'Necesito asistencia. Estoy reportando una emergencia desde la app BugaReport.\n'
+      'Mi ubicación: ';
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: ColoresApp.emergenciaFondo,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: ColoresApp.primario.withValues(alpha: 0.3),
-          width: 2,
+          width: 1.5,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 2,
-            offset: const Offset(0, 1),
-          ),
-        ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Izquierda: ícono + textos
+          // ── Header ──
           Row(
             children: [
-              // Ícono de teléfono en círculo rojo
               Container(
-                width: 40,
-                height: 40,
+                width: 36,
+                height: 36,
                 decoration: const BoxDecoration(
                   color: ColoresApp.primario,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.phone,
-                  color: Colors.white,
-                  size: 18,
-                ),
+                child: const Icon(Icons.emergency_outlined, color: Colors.white, size: 18),
               ),
-              const SizedBox(width: 12),
-              // Columna de textos
+              const SizedBox(width: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 3.5),
-                    child: Text(
-                      'LÍNEA DE EMERGENCIA',
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        height: 16 / 12,
-                        letterSpacing: -0.025 * 12,
-                        color: ColoresApp.primario,
-                      ),
+                  Text(
+                    'LÍNEA DE EMERGENCIA',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: ColoresApp.primario,
+                      letterSpacing: -0.025 * 12,
                     ),
                   ),
                   Text(
                     'Cuadrantes Emergencia Buga',
                     style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      height: 16 / 12,
+                      fontSize: 11,
                       color: ColoresApp.sobreSuperficieVariante,
                     ),
                   ),
@@ -79,27 +75,29 @@ class BarraEmergencia extends StatelessWidget {
             ],
           ),
 
-          // Derecha: botones de acción (llamar + WhatsApp)
-          Row(
-            children: [
-              // Botón llamar 123
-              _BotonAccion(
-                icono: Icons.call,
-                color: ColoresApp.primario,
-                alTocar: () {
-                  // TODO: lanzar url tel:123
-                },
-              ),
-              const SizedBox(width: 6),
-              // Botón WhatsApp
-              _BotonAccion(
-                icono: Icons.chat,
-                color: ColoresApp.terciario,
-                alTocar: () {
-                  // TODO: lanzar WhatsApp con mensaje pre-llenado
-                },
-              ),
-            ],
+          const SizedBox(height: 12),
+          const Divider(height: 1, color: Color(0xFFFFDAD8)),
+          const SizedBox(height: 10),
+
+          // ── Grid 2×2 de llamadas ──
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            childAspectRatio: 3.4,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            children: _lineas
+                .map((l) => _BotonLlamada(linea: l))
+                .toList(),
+          ),
+
+          const SizedBox(height: 10),
+
+          // ── Botón WhatsApp con ubicación ──
+          _BotonWhatsApp(
+            numero: _numeroWhatsApp,
+            mensajeBase: _mensajePredeterminado,
           ),
         ],
       ),
@@ -107,36 +105,170 @@ class BarraEmergencia extends StatelessWidget {
   }
 }
 
-class _BotonAccion extends StatelessWidget {
+// ── Modelo de línea de emergencia ──
+class _LineaEmergencia {
+  final String nombre;
+  final String numero;
   final IconData icono;
   final Color color;
-  final VoidCallback? alTocar;
+  const _LineaEmergencia(this.nombre, this.numero, this.icono, this.color);
+}
 
-  const _BotonAccion({
-    required this.icono,
-    required this.color,
-    this.alTocar,
-  });
+// ── Botón de llamada individual ──
+class _BotonLlamada extends StatelessWidget {
+  final _LineaEmergencia linea;
+  const _BotonLlamada({required this.linea});
+
+  Future<void> _llamar() async {
+    final uri = Uri.parse('tel:${linea.numero}');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: alTocar,
+      onTap: _llamar,
       child: Container(
-        width: 36,
-        height: 36,
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 3,
-              offset: const Offset(0, 1),
+          color: linea.color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: linea.color.withValues(alpha: 0.25)),
+        ),
+        child: Row(
+          children: [
+            Icon(linea.icono, size: 16, color: linea.color),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    linea.nombre,
+                    style: GoogleFonts.inter(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: ColoresApp.sobreSuperficie,
+                    ),
+                  ),
+                  Text(
+                    linea.numero,
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: linea.color,
+                    ),
+                  ),
+                ],
+              ),
             ),
+            Icon(Icons.call, size: 14, color: linea.color),
           ],
         ),
-        child: Icon(icono, color: Colors.white, size: 18),
+      ),
+    );
+  }
+}
+
+// ── Botón WhatsApp con mensaje y ubicación GPS ──
+class _BotonWhatsApp extends StatefulWidget {
+  final String numero;
+  final String mensajeBase;
+  const _BotonWhatsApp({required this.numero, required this.mensajeBase});
+
+  @override
+  State<_BotonWhatsApp> createState() => _EstadoBotonWhatsApp();
+}
+
+class _EstadoBotonWhatsApp extends State<_BotonWhatsApp> {
+  bool _cargando = false;
+
+  Future<void> _abrirWhatsApp() async {
+    setState(() => _cargando = true);
+    try {
+      String ubicacion = '';
+      try {
+        final pos = await ServicioUbicacion.instancia
+            .obtenerPosicionActual()
+            .timeout(const Duration(seconds: 5));
+        ubicacion =
+            'https://maps.google.com/?q=${pos.latitude},${pos.longitude}';
+      } catch (_) {
+        ubicacion = '(ubicación no disponible)';
+      }
+
+      final mensaje = Uri.encodeComponent(
+        '${widget.mensajeBase}$ubicacion',
+      );
+      final uri = Uri.parse('https://wa.me/${widget.numero}?text=$mensaje');
+
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    } finally {
+      if (mounted) setState(() => _cargando = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: _cargando ? null : _abrirWhatsApp,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: const Color(0xFF25D366).withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: const Color(0xFF25D366).withValues(alpha: 0.4),
+          ),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.chat_outlined, size: 18, color: Color(0xFF128C7E)),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'WhatsApp Alcaldía de Buga',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF075E54),
+                    ),
+                  ),
+                  Text(
+                    'Adjunta tu ubicación en tiempo real',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: ColoresApp.sobreSuperficieVariante,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (_cargando)
+              const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Color(0xFF128C7E),
+                ),
+              )
+            else
+              const Icon(
+                Icons.arrow_forward_ios,
+                size: 13,
+                color: Color(0xFF128C7E),
+              ),
+          ],
+        ),
       ),
     );
   }

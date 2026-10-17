@@ -116,7 +116,9 @@ class _EstadoPantallaInicio extends State<PantallaInicio> {
                     const SizedBox(height: 20),
 
                     // 3. Botón hero "Reportar Incidente"
-                    const BotonReportar(),
+                    BotonReportar(
+                      alTocar: () => Navigator.of(context).pushNamed(RutasApp.nuevoReporte),
+                    ),
 
                     const SizedBox(height: 12),
 
@@ -128,7 +130,14 @@ class _EstadoPantallaInicio extends State<PantallaInicio> {
                     const SizedBox(height: 20),
 
                     // 5. Categorías con desplazamiento horizontal
-                    const SeccionCategorias(),
+                    SeccionCategorias(
+                      alSeleccionarCategoria: (clave) {
+                        Navigator.of(context).pushNamed(
+                          RutasApp.nuevoReporte,
+                          arguments: {'categoria': clave},
+                        );
+                      },
+                    ),
 
                     const SizedBox(height: 24),
 

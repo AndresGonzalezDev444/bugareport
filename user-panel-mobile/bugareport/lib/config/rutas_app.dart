@@ -13,4 +13,5 @@ class RutasApp {
   static const String mapa = '/mapa';
   static const String ajustes = '/ajustes';
   static const String nuevoReporte = '/nuevo-reporte';
+  static const String misReportes  = '/mis-reportes';
 }

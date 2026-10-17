@@ -82,9 +82,9 @@ De conformidad con la **Ley 1581 de 2012**, usted tiene los siguientes derechos:
 - **Derecho de queja:** Presentar quejas ante la Superintendencia de Industria y Comercio (SIC) si considera que sus derechos han sido vulnerados.
 
 **Para ejercer sus derechos, puede contactar a:**  
-📧 bugareport@guadalajaradebuga.gov.co  
-📞 Secretaría de las TIC — Alcaldía de Guadalajara de Buga  
-📍 Calle 6 No. 13-62, Guadalajara de Buga, Valle del Cauca, Colombia
+Correo: bugareport@guadalajaradebuga.gov.co  
+Tel: Secretaría de las TIC — Alcaldía de Guadalajara de Buga  
+Dirección: Calle 6 No. 13-62, Guadalajara de Buga, Valle del Cauca, Colombia
 
 ---
 
@@ -167,10 +167,10 @@ Para cualquier duda, solicitud o queja relacionada con esta política:
 Secretaría de las TIC y Gobierno Abierto  
 Portal de Veeduría Ciudadana  
 
-📧 **bugareport@guadalajaradebuga.gov.co**  
-📞 **Línea de emergencias: 123**  
-🌐 **www.guadalajaradebuga.gov.co**  
-📍 Calle 6 No. 13-62, Guadalajara de Buga, Valle del Cauca, Colombia  
+Correo: **bugareport@guadalajaradebuga.gov.co**  
+Tel: **Línea de emergencias: 123**  
+Web: **www.guadalajaradebuga.gov.co**  
+Dirección: Calle 6 No. 13-62, Guadalajara de Buga, Valle del Cauca, Colombia  
 
 ---
 

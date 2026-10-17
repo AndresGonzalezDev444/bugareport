@@ -99,7 +99,7 @@ class ServicioNotificaciones {
 
     await _plugin.show(
       idReporte.hashCode,
-      '📋 Tu reporte: $titulo',
+      'Tu reporte: $titulo',
       'El incidente $etiquetaEstado por la Alcaldía de Buga.',
       _detalles,
     );

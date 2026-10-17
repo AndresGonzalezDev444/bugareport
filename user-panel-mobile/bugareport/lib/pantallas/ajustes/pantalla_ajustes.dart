@@ -6,6 +6,7 @@ import 'package:bugareport/config/rutas_app.dart';
 import 'package:bugareport/modelos/usuario.dart';
 import 'package:bugareport/servicios/servicio_autenticacion.dart';
 import 'package:bugareport/servicios/servicio_preferencias.dart';
+import 'package:bugareport/servicios/servicio_borrador.dart';
 
 /// Pantalla de Configuración y Ajustes de BugaReport.
 ///
@@ -92,6 +93,8 @@ class _EstadoPantallaAjustes extends State<PantallaAjustes> {
     if (confirmar != true) return;
 
     setState(() => _cerrandoSesion = true);
+    // HU13: limpiar borrador local al cerrar sesión
+    await ServicioBorrador.instancia.descartarBorrador();
     await ServicioAutenticacion.instancia.cerrarSesion();
     if (!mounted) return;
     Navigator.of(context).pushNamedAndRemoveUntil(
@@ -174,7 +177,7 @@ class _EstadoPantallaAjustes extends State<PantallaAjustes> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _etiquetaSeccion('👤 Perfil'),
+        _etiquetaSeccion('Perfil', Icons.person_outline),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(16),
@@ -350,7 +353,7 @@ class _EstadoPantallaAjustes extends State<PantallaAjustes> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _etiquetaSeccion('🔔 Notificaciones'),
+        _etiquetaSeccion('Notificaciones', Icons.notifications_outlined),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(vertical: 4),
@@ -401,7 +404,7 @@ class _EstadoPantallaAjustes extends State<PantallaAjustes> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _etiquetaSeccion('ℹ️ Acerca de BugaReport'),
+        _etiquetaSeccion('Acerca de BugaReport', Icons.info_outline),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(vertical: 4),
@@ -507,15 +510,23 @@ class _EstadoPantallaAjustes extends State<PantallaAjustes> {
 
   // ── Helpers de UI ──
 
-  Widget _etiquetaSeccion(String texto) {
-    return Text(
-      texto,
-      style: GoogleFonts.montserrat(
-        fontSize: 13,
-        fontWeight: FontWeight.w700,
-        color: ColoresApp.primarioOscuro,
-        letterSpacing: 0.3,
-      ),
+  Widget _etiquetaSeccion(String texto, [IconData? icono]) {
+    return Row(
+      children: [
+        if (icono != null) ...[
+          Icon(icono, size: 16, color: ColoresApp.primarioOscuro),
+          const SizedBox(width: 6),
+        ],
+        Text(
+          texto,
+          style: GoogleFonts.montserrat(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: ColoresApp.primarioOscuro,
+            letterSpacing: 0.3,
+          ),
+        ),
+      ],
     );
   }
 

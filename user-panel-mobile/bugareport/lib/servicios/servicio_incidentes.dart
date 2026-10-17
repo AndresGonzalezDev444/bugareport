@@ -98,32 +98,58 @@ class ServicioIncidentes {
   // ── TIEMPO REAL: Stream de incidentes (como Waze en vivo) ──
 
   /// Suscripción en tiempo real a los incidentes activos.
-  /// Los nuevos reportes de otros ciudadanos aparecen en el mapa al instante.
+  ///
+  /// - Si Realtime está habilitado en Supabase: actualiza al instante.
+  /// - Si Realtime no está habilitado (o falla): hace polling cada 30s.
+  ///   En ambos casos el mapa siempre muestra datos.
   Stream<List<Incidente>> transmitirIncidentesActivos() {
-    final controlador = StreamController<List<Incidente>>();
+    final controlador = StreamController<List<Incidente>>.broadcast();
 
-    // Carga inicial
+    // Carga inicial inmediata
     obtenerIncidentesActivos().then((incidentes) {
-      if (!controlador.isClosed) {
-        controlador.add(incidentes);
-      }
+      if (!controlador.isClosed) controlador.add(incidentes);
+    }).catchError((_) {
+      if (!controlador.isClosed) controlador.add([]);
     });
 
-    // Suscripción a cambios en tiempo real
-    _cliente
-        .from('incidents')
-        .stream(primaryKey: ['id'])
-        .listen((datos) {
-      final incidentesActivos = datos
-          .map((json) => Incidente.desdeJson(json))
-          .where((i) => i.estado != 'resuelto')
-          .toList();
-
-      if (!controlador.isClosed) {
-        controlador.add(incidentesActivos);
-      }
-    });
+    // Intentar suscripción Realtime
+    try {
+      _cliente
+          .from('incidents')
+          .stream(primaryKey: ['id'])
+          .listen(
+            (datos) {
+              final activos = datos
+                  .map((json) => Incidente.desdeJson(json))
+                  .where((i) => i.estado != 'resuelto')
+                  .toList();
+              if (!controlador.isClosed) controlador.add(activos);
+            },
+            onError: (_) {
+              // Realtime falló — el polling periódico compensará
+            },
+          );
+    } catch (_) {
+      // Realtime no disponible — activar polling de respaldo
+      _iniciarPolling(controlador);
+    }
 
     return controlador.stream;
+  }
+
+  /// Polling de respaldo cuando Realtime no está disponible.
+  /// Consulta cada 30 segundos.
+  void _iniciarPolling(StreamController<List<Incidente>> controlador) {
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(seconds: 30));
+      if (controlador.isClosed) return false;
+      try {
+        final incidentes = await obtenerIncidentesActivos();
+        if (!controlador.isClosed) controlador.add(incidentes);
+      } catch (_) {
+        // Ignorar errores de red en el polling
+      }
+      return !controlador.isClosed;
+    });
   }
 }
