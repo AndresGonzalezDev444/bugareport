@@ -1,0 +1,31 @@
+{
+  "name": "bugareport-admin-panel",
+  "version": "1.0.0",
+  "description": "BugaReport — Panel Administrativo Civic Console",
+  "type": "module",
+  "scripts": {
+    "dev":     "vite",
+    "build":   "vite build",
+    "preview": "vite preview",
+    "gen-hash": "node -e \"const s=require('js-sha256');const[,,,u,p]=process.argv;console.log('USER_HASH:',s(u));console.log('PASS_HASH:',s(p));\" --"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
+    "chart.js": "^4.4.5",
+    "exifr": "^7.1.3",
+    "html2canvas": "^1.4.1",
+    "js-sha256": "^0.11.0",
+    "jspdf": "^2.5.1",
+    "leaflet": "^1.9.4",
+    "papaparse": "^5.4.1",
+    "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.3.1",
+    "react-leaflet": "^4.2.1",
+    "react-router-dom": "^6.27.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.3",
+    "vite": "^5.4.10"
+  }
+}
