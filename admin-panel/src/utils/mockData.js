@@ -1,5 +1,6 @@
-// Datos mock de incidentes para demostración del frontend
-// Se reemplazan con datos reales de Supabase al configurar .env
+// Datos mock de incidentes para modo demo (fallback cuando Supabase no está configurado)
+// NO se usan cuando VITE_SUPABASE_URL está configurado en .env
+// getMockMetrics fue movido a utils/metricsHelpers.js — usar calcMetrics(incidents) en su lugar
 
 export const MOCK_INCIDENTS = [
   {
@@ -8,7 +9,7 @@ export const MOCK_INCIDENTS = [
     category: 'hueco_via',
     severity: 'critico',
     title: 'Hueco profundo con afectación vial',
-    description: '"Hueco de gran dimensión sobre calzada oriental. Afecta el tránsito continuo de buses y motocicletas en hora pico, provocando frenazos de emergencia."',
+    description: 'Hueco de gran dimensión sobre calzada oriental. Afecta el tránsito continuo de buses y motocicletas en hora pico, provocando frenazos de emergencia.',
     latitude: 3.9032,
     longitude: -76.3034,
     photo_url: null,
@@ -17,6 +18,7 @@ export const MOCK_INCIDENTS = [
     address: 'Cra 12 # 6-24, Barrio El Albergue',
     created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
     updated_at: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+    reporter: null,
   },
   {
     id: '0034bcde-2345-6789-bcde-f01234567890',
@@ -33,6 +35,7 @@ export const MOCK_INCIDENTS = [
     address: 'Cll 4 con Cra 15, Barrio La Estación',
     created_at: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
     updated_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+    reporter: { nombre_completo: 'Carlos Rivas', email: 'carlos@demo.co', celular: null, comuna: 'El Centro' },
   },
   {
     id: '0021cdef-3456-789a-cdef-012345678901',
@@ -49,6 +52,7 @@ export const MOCK_INCIDENTS = [
     address: 'Calle 8 con Cra 11, Barrio El Molino',
     created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     updated_at: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString(),
+    reporter: null,
   },
   {
     id: '0055defg-4567-890b-defg-123456789012',
@@ -65,6 +69,7 @@ export const MOCK_INCIDENTS = [
     address: 'Parque Guadalajara, Centro Histórico',
     created_at: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
     updated_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+    reporter: { nombre_completo: 'Laura Montoya', email: 'laura@demo.co', celular: '3101234567', comuna: 'El Centro' },
   },
   {
     id: '0062efgh-5678-901c-efgh-234567890123',
@@ -81,6 +86,7 @@ export const MOCK_INCIDENTS = [
     address: 'Carrera 13 # 2-45, Centro',
     created_at: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(),
     updated_at: new Date(Date.now() - 70 * 60 * 60 * 1000).toISOString(),
+    reporter: null,
   },
   {
     id: '0078fghi-6789-012d-fghi-345678901234',
@@ -97,6 +103,7 @@ export const MOCK_INCIDENTS = [
     address: 'Cll 10 # 8-30, Barrio Alfonso López',
     created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
     updated_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    reporter: { nombre_completo: 'Pedro Jiménez', email: null, celular: '3159876543', comuna: 'Alfonso López' },
   },
   {
     id: '0091ghij-7890-123e-ghij-456789012345',
@@ -113,6 +120,7 @@ export const MOCK_INCIDENTS = [
     address: 'Cll 6 # 10-12, Barrio Los Cristales',
     created_at: new Date(Date.now() - 96 * 60 * 60 * 1000).toISOString(),
     updated_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+    reporter: null,
   },
   {
     id: '0105hijk-8901-234f-hijk-567890123456',
@@ -129,22 +137,6 @@ export const MOCK_INCIDENTS = [
     address: 'Av. Colombia # 14-20',
     created_at: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
     updated_at: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
+    reporter: null,
   },
 ];
-
-export function getMockMetrics() {
-  const total      = MOCK_INCIDENTS.length;
-  const pendientes = MOCK_INCIDENTS.filter(i => i.status === 'pendiente').length;
-  const enProceso  = MOCK_INCIDENTS.filter(i => i.status === 'en_proceso').length;
-  const resueltos  = MOCK_INCIDENTS.filter(i => i.status === 'resuelto').length;
-  const criticos   = MOCK_INCIDENTS.filter(i => i.severity === 'critico').length;
-
-  const byCategory = {
-    hueco_via:          MOCK_INCIDENTS.filter(i => i.category === 'hueco_via').length,
-    servicios_publicos: MOCK_INCIDENTS.filter(i => i.category === 'servicios_publicos').length,
-    comunitario:        MOCK_INCIDENTS.filter(i => i.category === 'comunitario').length,
-    aseo_parques:       MOCK_INCIDENTS.filter(i => i.category === 'aseo_parques').length,
-  };
-
-  return { total, pendientes, enProceso, resueltos, criticos, byCategory };
-}

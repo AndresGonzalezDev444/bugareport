@@ -1,26 +1,33 @@
 import { useState } from 'react';
 import MapConsole from '../components/map/MapConsole.jsx';
 import IncidentDrawer from '../components/incidents/IncidentDrawer.jsx';
-import { StatusBadge, SeverityBadge, CategoryBadge } from '../components/ui/Badge.jsx';
-import { IconTrend, IconLocation, IconClock, IconRefresh, IconMap } from '../components/ui/Icons.jsx';
+import { StatusBadge } from '../components/ui/Badge.jsx';
+import { IconLocation, IconRefresh, IconMap } from '../components/ui/Icons.jsx';
 import { SEVERITY_COLOR, timeAgo, incidentId } from '../utils/statusHelpers.js';
-import { getMockMetrics as calcMetrics } from '../utils/mockData.js';
+import { calcMetrics } from '../utils/metricsHelpers.js';
 
 function KpiCard({ label, value, valueClass, sub, badge, badgeClass, accentColor, bars }) {
   return (
-    <div className={`kpi-card${accentColor ? ' critical' : ''}`}
-      style={accentColor ? { borderLeftColor: accentColor } : {}}>
+    <div
+      className={`kpi-card${accentColor ? ' critical' : ''}`}
+      style={accentColor ? { borderLeftColor: accentColor } : {}}
+    >
       <div className="kpi-card-top">
         <span className="kpi-label">{label}</span>
-        {badge && <span className={`kpi-badge ${badgeClass}`}>{badge}</span>}
+        {badge != null && (
+          <span className={`kpi-badge ${badgeClass}`}>{badge}</span>
+        )}
       </div>
       <div style={{ position: 'relative', height: 40, display: 'flex', alignItems: 'flex-end' }}>
         <span className={`kpi-value ${valueClass || ''}`}>{value}</span>
         {bars && (
           <div className="kpi-bar-container">
             {bars.map((h, i) => (
-              <div key={i} className="kpi-bar"
-                style={{ height: `${h}%`, background: accentColor || 'var(--color-success)' }} />
+              <div
+                key={i}
+                className="kpi-bar"
+                style={{ height: `${h}%`, background: accentColor || 'var(--color-success)' }}
+              />
             ))}
           </div>
         )}
@@ -30,40 +37,50 @@ function KpiCard({ label, value, valueClass, sub, badge, badgeClass, accentColor
   );
 }
 
-export default function Dashboard({ incidents, loading, updateStatus }) {
+export default function Dashboard({ incidents, loading, updateStatus, refetch }) {
   const [selectedIncident, setSelectedIncident] = useState(null);
-  const [mapFilter, setMapFilter] = useState('Cuadrantes');
+  const [mapFilter,        setMapFilter]        = useState('Cuadrantes');
 
-  const metrics = calcMetrics(incidents);
-  const recent  = [...incidents].slice(0, 8);
+  // ── Métricas 100% dinámicas desde datos reales ──────────────────
+  const m = calcMetrics(incidents);
+
+  // Badge de "reportes hoy"
+  const hoyBadge = m.reportesHoy > 0 ? `+${m.reportesHoy} hoy` : 'Sin reportes hoy';
+
+  // Badge de "críticos hoy"
+  const criticosBadge = m.criticosHoy > 0 ? `+${m.criticosHoy} hoy` : 'Sin críticos hoy';
+
+  // Badge de "promedio de resolución"
+  const promedioBadge = m.promedioHrs != null ? `${m.promedioHrs} hrs promedio` : 'Sin datos';
+
+  const recent = incidents.slice(0, 8);
 
   return (
     <div className="page-content">
-      {/* ROW 1 — KPI Cards */}
+      {/* ── ROW 1 — KPI Cards ── */}
       <div className="kpi-grid">
         <KpiCard
           label="Total reportes"
-          value={metrics.total}
-          badge="+12 hoy"
+          value={m.total}
+          badge={hoyBadge}
           badgeClass="green"
-          sub="Registrados en 24h"
+          sub="Registrados en el sistema"
           bars={[30, 45, 60, 50, 80, 70, 100]}
-          accentColor={null}
           valueClass=""
         />
         <KpiCard
           label="Pendientes"
-          value={metrics.pendientes}
-          badge="-0.3 hrs respuesta"
+          value={m.pendientes}
+          badge={`${m.enProceso} en proceso`}
           badgeClass="blue"
-          sub="En validación técnica o asignación"
+          sub="Sin validar o sin cuadrilla asignada"
           bars={[60, 50, 70, 55, 65, 60, 75]}
           valueClass="orange"
         />
         <KpiCard
           label="Críticos"
-          value={metrics.criticos}
-          badge="+6 hoy"
+          value={m.criticos}
+          badge={criticosBadge}
           badgeClass="red"
           sub="Prioridad inmediata de despacho"
           bars={[40, 55, 50, 70, 65, 80, 85]}
@@ -72,8 +89,8 @@ export default function Dashboard({ incidents, loading, updateStatus }) {
         />
         <KpiCard
           label="Resueltos"
-          value={metrics.resueltos}
-          badge="5.1 hrs promedio"
+          value={m.resueltos}
+          badge={promedioBadge}
           badgeClass="green"
           sub="Cerrados con verificación ciudadana"
           bars={[50, 65, 75, 80, 85, 90, 95]}
@@ -81,7 +98,7 @@ export default function Dashboard({ incidents, loading, updateStatus }) {
         />
       </div>
 
-      {/* ROW 2 — Mapa + Lista reciente */}
+      {/* ── ROW 2 — Mapa + Lista reciente ── */}
       <div className="bento-grid">
         {/* Mapa */}
         <div className="bento-col-8">
@@ -90,28 +107,32 @@ export default function Dashboard({ incidents, loading, updateStatus }) {
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{
                   background: 'var(--color-navy)', borderRadius: 8,
-                  padding: '8px 8px 13px', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  padding: '8px 8px 13px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   <IconMap size={14} style={{ color: 'var(--bg-header)' }} />
                 </div>
                 <div>
                   <div className="card-title">Mapa en tiempo real — Cuadrantes Urbanos</div>
-                  <div className="card-subtitle">Guadalajara de Buga · Q-01 a Q-14 · Malla vial y equipamiento</div>
+                  <div className="card-subtitle">
+                    Guadalajara de Buga · Q-01 a Q-14 · Malla vial y equipamiento
+                  </div>
                 </div>
               </div>
               <div className="map-controls">
-                {/* Toggles de capa */}
                 <div className="filter-tabs">
                   {['Cuadrantes', 'Calor', 'Marcadores'].map(f => (
                     <button
                       key={f}
                       className={`filter-tab${mapFilter === f ? ' active' : ''}`}
                       onClick={() => setMapFilter(f)}
-                    >{f}</button>
+                    >
+                      {f}
+                    </button>
                   ))}
                 </div>
               </div>
             </div>
+
             {loading ? (
               <div style={{ height: 520, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <span className="loading-spinner" />
@@ -128,18 +149,23 @@ export default function Dashboard({ incidents, loading, updateStatus }) {
             <div className="card-header" style={{ padding: '14px 16px' }}>
               <div>
                 <div className="card-title" style={{ fontSize: '0.9375rem' }}>Incidentes recientes</div>
-                <div className="card-subtitle">Últimos reportes ciudadanos</div>
+                <div className="card-subtitle">
+                  {loading ? 'Cargando...' : `${incidents.length} reportes en total`}
+                </div>
               </div>
-              <button className="btn btn-ghost btn-icon" title="Actualizar">
+              <button className="btn btn-ghost btn-icon" title="Actualizar" onClick={refetch}>
                 <IconRefresh size={13} />
               </button>
             </div>
+
             <div className="recent-list">
-              {recent.length === 0 && (
+              {!loading && recent.length === 0 && (
                 <div className="empty-state">
                   <div className="empty-state-title">Sin incidentes</div>
+                  <div className="empty-state-sub">Los reportes ciudadanos aparecerán aquí en tiempo real</div>
                 </div>
               )}
+
               {recent.map(inc => (
                 <div
                   key={inc.id}
@@ -160,9 +186,7 @@ export default function Dashboard({ incidents, loading, updateStatus }) {
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
                     <StatusBadge status={inc.status} />
-                    <span className="recent-item-time">
-                      {timeAgo(inc.created_at)}
-                    </span>
+                    <span className="recent-item-time">{timeAgo(inc.created_at)}</span>
                   </div>
                 </div>
               ))}

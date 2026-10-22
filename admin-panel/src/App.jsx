@@ -52,7 +52,7 @@ export default function App() {
         element={
           <ProtectedRoute element={
             <Layout {...layoutProps}>
-              <Dashboard incidents={incidents} loading={loading} updateStatus={updateStatus} />
+              <Dashboard incidents={incidents} loading={loading} updateStatus={updateStatus} refetch={refetch} />
             </Layout>
           } />
         }
@@ -82,7 +82,7 @@ export default function App() {
         element={
           <ProtectedRoute element={
             <Layout {...layoutProps}>
-              <MetricsPage incidents={incidents} />
+              <MetricsPage incidents={incidents} refetch={refetch} />
             </Layout>
           } />
         }
