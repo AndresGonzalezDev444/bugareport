@@ -1,6 +1,4 @@
 // Datos mock de incidentes para modo demo (fallback cuando Supabase no está configurado)
-// NO se usan cuando VITE_SUPABASE_URL está configurado en .env
-// getMockMetrics fue movido a utils/metricsHelpers.js — usar calcMetrics(incidents) en su lugar
 
 export const MOCK_INCIDENTS = [
   {

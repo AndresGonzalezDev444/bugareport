@@ -41,7 +41,7 @@ export default function Dashboard({ incidents, loading, updateStatus, refetch })
   const [selectedIncident, setSelectedIncident] = useState(null);
   const [mapFilter,        setMapFilter]        = useState('Cuadrantes');
 
-  // ── Métricas 100% dinámicas desde datos reales ──────────────────
+  // Métricas 100% dinámicas desde datos reales
   const m = calcMetrics(incidents);
 
   // Badge de "reportes hoy"
@@ -57,7 +57,7 @@ export default function Dashboard({ incidents, loading, updateStatus, refetch })
 
   return (
     <div className="page-content">
-      {/* ── ROW 1 — KPI Cards ── */}
+      {/* ROW 1 — KPI Cards */}
       <div className="kpi-grid">
         <KpiCard
           label="Total reportes"
@@ -98,7 +98,7 @@ export default function Dashboard({ incidents, loading, updateStatus, refetch })
         />
       </div>
 
-      {/* ── ROW 2 — Mapa + Lista reciente ── */}
+      {/* ROW 2 — Mapa + Lista reciente */}
       <div className="bento-grid">
         {/* Mapa */}
         <div className="bento-col-8">

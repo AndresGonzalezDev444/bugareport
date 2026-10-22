@@ -13,7 +13,7 @@ export function calcMetrics(incidents = []) {
   const resueltos  = incidents.filter(i => i.status === 'resuelto').length;
   const criticos   = incidents.filter(i => i.severity === 'critico').length;
 
-  // ── Distribución por categoría ──────────────────────────────────
+  // Distribución por categoría
   const byCategory = {
     hueco_via:          incidents.filter(i => i.category === 'hueco_via').length,
     servicios_publicos: incidents.filter(i => i.category === 'servicios_publicos').length,
@@ -21,7 +21,7 @@ export function calcMetrics(incidents = []) {
     aseo_parques:       incidents.filter(i => i.category === 'aseo_parques').length,
   };
 
-  // ── Distribución por severidad ──────────────────────────────────
+  // Distribución por severidad
   const bySeverity = {
     critico: incidents.filter(i => i.severity === 'critico').length,
     alta:    incidents.filter(i => i.severity === 'alta').length,
@@ -29,14 +29,14 @@ export function calcMetrics(incidents = []) {
     baja:    incidents.filter(i => i.severity === 'baja').length,
   };
 
-  // ── Distribución por cuadrante ──────────────────────────────────
+  // Distribución por cuadrante
   const byQuadrant = {};
   incidents.forEach(i => {
     const q = i.quadrant || 'Sin asignar';
     byQuadrant[q] = (byQuadrant[q] || 0) + 1;
   });
 
-  // ── Cuadrante más frecuente ─────────────────────────────────────
+  // Cuadrante más frecuente
   const topQuadrantEntry = Object.entries(byQuadrant)
     .filter(([q]) => q !== 'Sin asignar')
     .sort((a, b) => b[1] - a[1])[0];
@@ -44,16 +44,16 @@ export function calcMetrics(incidents = []) {
   const topQuadrantCount = topQuadrantEntry?.[1] || 0;
   const topQuadrantPct   = total > 0 ? Math.round((topQuadrantCount / total) * 100) : 0;
 
-  // ── Reportes de hoy ────────────────────────────────────────────
+  // Reportes de hoy
   const todayStr     = new Date().toDateString();
   const reportesHoy  = incidents.filter(i => new Date(i.created_at).toDateString() === todayStr).length;
 
-  // ── Críticos de hoy ────────────────────────────────────────────
+  // Críticos de hoy
   const criticosHoy  = incidents.filter(
     i => i.severity === 'critico' && new Date(i.created_at).toDateString() === todayStr
   ).length;
 
-  // ── Tiempo promedio de resolución (hrs) ─────────────────────────
+  // Tiempo promedio de resolución (hrs)
   // Usa updated_at - created_at para los incidentes resueltos
   const resueltosArr = incidents.filter(i => i.status === 'resuelto');
   const promedioHrs  = resueltosArr.length > 0
@@ -65,7 +65,7 @@ export function calcMetrics(incidents = []) {
       ).toFixed(1)
     : null;
 
-  // ── Tasa de validación: (en_proceso + resuelto) / total ─────────
+  // Tasa de validación: (en_proceso + resuelto) / total
   const validados       = enProceso + resueltos;
   const tasaValidacion  = total > 0
     ? Math.round((validados / total) * 100)

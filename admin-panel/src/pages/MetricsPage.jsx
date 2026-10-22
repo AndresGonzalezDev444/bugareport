@@ -33,10 +33,10 @@ function MetricCard({ label, value, sub, accentColor, badge }) {
 export default function MetricsPage({ incidents, refetch }) {
   const [activeTab, setActiveTab] = useState('Resumen General');
 
-  // ── Todas las métricas computadas dinámicamente ──────────────────
+  // Todas las métricas computadas dinámicamente
   const m = useMemo(() => calcMetrics(incidents), [incidents]);
 
-  // ── Chart data ──────────────────────────────────────────────────
+  // Chart data
   const donutData = {
     labels: Object.keys(m.byCategory).map(k => CATEGORY_LABELS[k] || k),
     datasets: [{
@@ -152,7 +152,7 @@ export default function MetricsPage({ incidents, refetch }) {
           ))}
         </div>
 
-        {/* ── KPI adicionales — 100% dinámicos ── */}
+        {/* KPI adicionales — 100% dinámicos */}
         <div className="kpi-grid">
           <MetricCard
             label="Tiempo medio resolución"
@@ -190,7 +190,7 @@ export default function MetricsPage({ incidents, refetch }) {
           />
         </div>
 
-        {/* ── Gráficas ── */}
+        {/* Gráficas */}
         <div className="metrics-grid">
           {/* Donut por categoría */}
           <div className="card col-4" style={{ overflow: 'hidden' }}>

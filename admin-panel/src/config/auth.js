@@ -1,13 +1,9 @@
 import sha256 from 'js-sha256';
 
-// Hashes guardados en .env — NUNCA las credenciales en texto plano aquí
 const ADMIN_USER_HASH = import.meta.env.VITE_ADMIN_USER_HASH || '';
 const ADMIN_PASS_HASH = import.meta.env.VITE_ADMIN_PASS_HASH || '';
 
-/**
- * Valida credenciales comparando hashes SHA-256.
- * Las contraseñas nunca viajan en texto plano por el código.
- */
+
 export function validateCredentials(username, password) {
   const userHash = sha256(username.trim());
   const passHash = sha256(password);

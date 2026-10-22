@@ -1,9 +1,6 @@
-/* ============================================================
-   BugaReport Admin Panel — Design System
-   Extraído del Figma: nodos 3826-4453 / 5165 / 6206 / 7871
-   ============================================================ */
+/* BugaReport Admin Panel — Design System */
 
-/* ── 1. Reset & Base ─────────────────────────────────────── */
+/* 1. Reset & Base */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -24,7 +21,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── 2. Design Tokens ────────────────────────────────────── */
+/* 2. Design Tokens */
 :root {
   /* Colores primarios (del Figma) */
   --color-primary:          #5B0510;
@@ -100,7 +97,7 @@ body {
   --transition-slow:        300ms ease;
 }
 
-/* ── 3. Tipografía ───────────────────────────────────────── */
+/* 3. Tipografía */
 h1, h2, h3, h4 {
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
@@ -137,7 +134,7 @@ h4 { font-size: 0.875rem; } /* 14px */
   font-weight: 600;
 }
 
-/* ── 4. Layout Principal ─────────────────────────────────── */
+/* 4. Layout Principal */
 .app-shell {
   display: flex;
   min-height: 100vh;
@@ -189,7 +186,7 @@ h4 { font-size: 0.875rem; } /* 14px */
   overflow-y: auto;
 }
 
-/* ── 5. Sidebar ──────────────────────────────────────────── */
+/* 5. Sidebar */
 .sidebar-brand {
   padding: 20px 16px 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -352,7 +349,7 @@ h4 { font-size: 0.875rem; } /* 14px */
   margin-top: 1px;
 }
 
-/* ── 6. Header ───────────────────────────────────────────── */
+/* 6. Header */
 .header-left {
   display: flex;
   align-items: center;
@@ -480,7 +477,7 @@ h4 { font-size: 0.875rem; } /* 14px */
 .header-user-name { font-weight: 600; color: var(--color-text-dark); line-height: 1.2; }
 .header-user-role { color: var(--color-text-muted); font-size: 0.6875rem; }
 
-/* ── 7. Cards / KPIs ─────────────────────────────────────── */
+/* 7. Cards / KPIs */
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -576,7 +573,7 @@ h4 { font-size: 0.875rem; } /* 14px */
   margin-top: 4px;
 }
 
-/* ── 8. Card genérico ────────────────────────────────────── */
+/* 8. Card genérico */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border-medium);
@@ -611,7 +608,7 @@ h4 { font-size: 0.875rem; } /* 14px */
   padding: 16px;
 }
 
-/* ── 9. Botones ──────────────────────────────────────────── */
+/* 9. Botones */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -698,7 +695,7 @@ h4 { font-size: 0.875rem; } /* 14px */
   box-shadow: none;
 }
 
-/* ── 10. Badges / Status ─────────────────────────────────── */
+/* 10. Badges / Status */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -725,7 +722,7 @@ h4 { font-size: 0.875rem; } /* 14px */
 .badge-cat-comunitario { background: var(--color-purple-light); color: var(--color-purple); }
 .badge-cat-aseo        { background: var(--color-success-light); color: var(--color-success-mid); }
 
-/* ── 11. Tabla de Incidentes ─────────────────────────────── */
+/* 11. Tabla de Incidentes */
 .incidents-table {
   width: 100%;
   border-collapse: collapse;
@@ -788,7 +785,7 @@ h4 { font-size: 0.875rem; } /* 14px */
   font-size: 0.6875rem;
 }
 
-/* ── 12. Filtros / Toolbar ───────────────────────────────── */
+/* 12. Filtros / Toolbar */
 .toolbar {
   display: flex;
   align-items: center;
@@ -870,7 +867,7 @@ h4 { font-size: 0.875rem; } /* 14px */
   background-position: right 8px center;
 }
 
-/* ── 13. Mapa ────────────────────────────────────────────── */
+/* 13. Mapa */
 .map-container {
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   overflow: hidden;
@@ -926,7 +923,7 @@ h4 { font-size: 0.875rem; } /* 14px */
 .pin-popup-title { font-weight: 700; color: var(--color-text-dark); margin-bottom: 4px; }
 .pin-popup-meta  { color: var(--color-text-muted); font-size: 0.6875rem; }
 
-/* ── 14. Drawer de Detalle ───────────────────────────────── */
+/* 14. Drawer de Detalle */
 .drawer-overlay {
   position: fixed;
   inset: 0;
@@ -1004,7 +1001,7 @@ h4 { font-size: 0.875rem; } /* 14px */
 .drawer-actions-primary .btn  { flex: 1; }
 .drawer-actions-secondary .btn { flex: 1; }
 
-/* ── 15. EXIF Panel ──────────────────────────────────────── */
+/* 15. EXIF Panel */
 .photo-exif-wrapper {
   position: relative;
   border-radius: var(--radius-md);
@@ -1062,7 +1059,7 @@ h4 { font-size: 0.875rem; } /* 14px */
   font-family: 'JetBrains Mono', monospace;
 }
 
-/* ── 16. Métricas / Gráficas ─────────────────────────────── */
+/* 16. Métricas / Gráficas */
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -1250,7 +1247,7 @@ h4 { font-size: 0.875rem; } /* 14px */
   overflow: hidden;
 }
 
-/* ── 18. Login ───────────────────────────────────────────── */
+/* 18. Login */
 .login-page {
   min-height: 100vh;
   display: flex;
@@ -1418,7 +1415,7 @@ h4 { font-size: 0.875rem; } /* 14px */
 }
 .toggle-pass:hover { color: rgba(255,255,255,0.7); }
 
-/* ── 19. Mapa principal ──────────────────────────────────── */
+/* 19. Mapa principal */
 .bento-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -1434,7 +1431,7 @@ h4 { font-size: 0.875rem; } /* 14px */
   .bento-col-8, .bento-col-4 { grid-column: span 1; }
 }
 
-/* ── 20. Sub-header de página ────────────────────────────── */
+/* 20. Sub-header de página */
 .page-sub-header {
   background: var(--bg-card);
   border-bottom: 1px solid var(--border-soft);
@@ -1452,7 +1449,7 @@ h4 { font-size: 0.875rem; } /* 14px */
 
 .page-actions { display: flex; align-items: center; gap: 10px; }
 
-/* ── 21. Recent Incidents Side Panel ─────────────────────── */
+/* 21. Recent Incidents Side Panel */
 .recent-list {
   display: flex;
   flex-direction: column;
@@ -1485,7 +1482,7 @@ h4 { font-size: 0.875rem; } /* 14px */
 .recent-item-loc  { font-size: 0.6875rem; color: var(--color-text-muted); display: flex; align-items: center; gap: 3px; }
 .recent-item-time { font-size: 0.625rem; color: var(--color-text-muted); white-space: nowrap; }
 
-/* ── 22. Misc Utilities ──────────────────────────────────── */
+/* 22. Misc Utilities */
 .flex { display: flex; }
 .flex-col { flex-direction: column; }
 .items-center { align-items: center; }
@@ -1525,7 +1522,7 @@ h4 { font-size: 0.875rem; } /* 14px */
 .empty-state-title { font-weight: 600; font-size: 0.875rem; color: var(--color-text-main); }
 .empty-state-sub   { font-size: 0.75rem; }
 
-/* ── 23. Scrollbar global ────────────────────────────────── */
+/* 23. Scrollbar global */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
