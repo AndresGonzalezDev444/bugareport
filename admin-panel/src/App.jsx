@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './hooks/useAuth.js';
+import { useAuth, AuthProvider } from './hooks/useAuth.jsx';
 import { useIncidents } from './hooks/useIncidents.js';
 import Layout from './components/layout/Layout.jsx';
 import Login from './pages/Login.jsx';
@@ -8,6 +8,7 @@ import MapPage from './pages/MapPage.jsx';
 import IncidentsPage from './pages/IncidentsPage.jsx';
 import MetricsPage from './pages/MetricsPage.jsx';
 import ReportsPage from './pages/ReportsPage.jsx';
+import ConfigPage from './pages/ConfigPage.jsx';
 
 function ProtectedRoute({ element }) {
   const { isAuthenticated, loading } = useAuth();
@@ -23,7 +24,7 @@ export default function App() {
   const { isAuthenticated, logout } = useAuth();
   const {
     incidents, loading, lastUpdate,
-    refetch, updateStatus, isDemo
+    refetch, updateStatus, updateQuadrant, isDemo
   } = useIncidents();
 
   const layoutProps = {
@@ -52,7 +53,7 @@ export default function App() {
         element={
           <ProtectedRoute element={
             <Layout {...layoutProps}>
-              <Dashboard incidents={incidents} loading={loading} updateStatus={updateStatus} refetch={refetch} />
+              <Dashboard incidents={incidents} loading={loading} updateStatus={updateStatus} updateQuadrant={updateQuadrant} refetch={refetch} />
             </Layout>
           } />
         }
@@ -72,7 +73,7 @@ export default function App() {
         element={
           <ProtectedRoute element={
             <Layout {...layoutProps}>
-              <IncidentsPage incidents={incidents} loading={loading} updateStatus={updateStatus} refetch={refetch} />
+              <IncidentsPage incidents={incidents} loading={loading} updateStatus={updateStatus} updateQuadrant={updateQuadrant} refetch={refetch} />
             </Layout>
           } />
         }
@@ -93,6 +94,17 @@ export default function App() {
           <ProtectedRoute element={
             <Layout {...layoutProps}>
               <ReportsPage incidents={incidents} />
+            </Layout>
+          } />
+        }
+      />
+
+      <Route
+        path="/configuracion"
+        element={
+          <ProtectedRoute element={
+            <Layout {...layoutProps}>
+              <ConfigPage isDemo={isDemo} />
             </Layout>
           } />
         }

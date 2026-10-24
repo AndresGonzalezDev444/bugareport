@@ -14,10 +14,13 @@ const CUADRILLAS = {
   aseo_parques:       { nombre: 'Cuadrilla 02 — Aseo Urbano',           operarios: '4 operarios · Camión compactador #05', dist: '0.5 km' },
 };
 
-export default function IncidentDrawer({ incident, onClose, onUpdateStatus }) {
-  const [updating, setUpdating]   = useState(false);
-  const [feedback, setFeedback]   = useState(null);
-  const [imgError, setImgError]   = useState(false);
+export default function IncidentDrawer({ incident, onClose, onUpdateStatus, onUpdateQuadrant }) {
+  const [updating,      setUpdating]      = useState(false);
+  const [feedback,      setFeedback]      = useState(null);
+  const [imgError,      setImgError]      = useState(false);
+  const [quadrantEdit,  setQuadrantEdit]  = useState(incident.quadrant || '');
+  const [savingQuad,    setSavingQuad]    = useState(false);
+  const [quadFeedback,  setQuadFeedback]  = useState(null);
 
   if (!incident) return null;
 
@@ -36,6 +39,16 @@ export default function IncidentDrawer({ incident, onClose, onUpdateStatus }) {
     setFeedback(result.success ? 'success' : 'error');
     setUpdating(false);
     setTimeout(() => setFeedback(null), 3000);
+  }
+
+  async function handleSaveQuadrant() {
+    if (!onUpdateQuadrant) return;
+    setSavingQuad(true);
+    setQuadFeedback(null);
+    const result = await onUpdateQuadrant(incident.id, quadrantEdit);
+    setQuadFeedback(result.success ? 'ok' : 'error');
+    setSavingQuad(false);
+    setTimeout(() => setQuadFeedback(null), 2500);
   }
 
   return (
@@ -129,11 +142,38 @@ export default function IncidentDrawer({ incident, onClose, onUpdateStatus }) {
           {/* 3. Cuadrante y tiempo */}
           <div className="drawer-section">
             <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-              <div>
+              <div style={{ minWidth: 140 }}>
                 <div className="drawer-section-title">Cuadrante</div>
-                <div style={{ fontWeight: 700, fontSize: '0.9375rem', color: 'var(--color-navy)', marginTop: 2 }}>
-                  {incident.quadrant || 'Sin asignar'}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                  <select
+                    value={quadrantEdit}
+                    onChange={e => setQuadrantEdit(e.target.value)}
+                    className="select-filter"
+                    style={{ fontSize: '0.8125rem', fontWeight: 700, minWidth: 80, padding: '4px 8px' }}
+                  >
+                    <option value="">Sin asignar</option>
+                    {Array.from({ length: 14 }, (_, i) => {
+                      const q = `Q-${String(i + 1).padStart(2, '0')}`;
+                      return <option key={q} value={q}>{q}</option>;
+                    })}
+                  </select>
+                  {quadrantEdit !== (incident.quadrant || '') && (
+                    <button
+                      className="btn btn-primary"
+                      style={{ padding: '4px 10px', fontSize: '0.75rem' }}
+                      onClick={handleSaveQuadrant}
+                      disabled={savingQuad}
+                    >
+                      {savingQuad ? 'Guardando...' : 'Guardar'}
+                    </button>
+                  )}
                 </div>
+                {quadFeedback && (
+                  <div style={{ fontSize: '0.6875rem', marginTop: 4, fontWeight: 600,
+                    color: quadFeedback === 'ok' ? 'var(--color-success)' : 'var(--color-danger)' }}>
+                    {quadFeedback === 'ok' ? 'Cuadrante guardado' : 'Error al guardar'}
+                  </div>
+                )}
               </div>
               <div>
                 <div className="drawer-section-title">Reportado</div>

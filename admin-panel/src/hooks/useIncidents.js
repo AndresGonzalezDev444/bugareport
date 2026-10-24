@@ -63,8 +63,9 @@ export function useIncidents() {
     } catch (err) {
       console.error('[useIncidents] Error al cargar incidentes:', err.message);
       setError(err.message);
-      // Fallback a mock en caso de error de red o RLS
-      setIncidents(MOCK_INCIDENTS);
+      // Supabase está configurado pero hubo error → array vacío (NO datos de ejemplo)
+      // Los datos mock solo se usan en modo demo (sin Supabase configurado)
+      setIncidents([]);
     } finally {
       setLoading(false);
     }

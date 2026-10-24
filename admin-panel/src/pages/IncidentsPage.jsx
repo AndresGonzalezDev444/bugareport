@@ -1,10 +1,15 @@
 import { useState } from 'react';
 import IncidentTable from '../components/incidents/IncidentTable.jsx';
 import IncidentDrawer from '../components/incidents/IncidentDrawer.jsx';
-import { IconList, IconRefresh } from '../components/ui/Icons.jsx';
+import { IconRefresh } from '../components/ui/Icons.jsx';
 
-export default function IncidentsPage({ incidents, loading, updateStatus, refetch }) {
+export default function IncidentsPage({ incidents, loading, updateStatus, updateQuadrant, refetch }) {
   const [selected, setSelected] = useState(null);
+
+  // Sincronizar el incidente seleccionado con los datos actualizados en tiempo real
+  const selectedFresh = selected
+    ? incidents.find(i => i.id === selected.id) || selected
+    : null;
 
   return (
     <>
@@ -34,11 +39,12 @@ export default function IncidentsPage({ incidents, loading, updateStatus, refetc
         )}
       </div>
 
-      {selected && (
+      {selectedFresh && (
         <IncidentDrawer
-          incident={selected}
+          incident={selectedFresh}
           onClose={() => setSelected(null)}
           onUpdateStatus={updateStatus}
+          onUpdateQuadrant={updateQuadrant}
         />
       )}
     </>

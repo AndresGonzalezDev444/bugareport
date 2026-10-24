@@ -37,7 +37,7 @@ function KpiCard({ label, value, valueClass, sub, badge, badgeClass, accentColor
   );
 }
 
-export default function Dashboard({ incidents, loading, updateStatus, refetch }) {
+export default function Dashboard({ incidents, loading, updateStatus, updateQuadrant, refetch }) {
   const [selectedIncident, setSelectedIncident] = useState(null);
   const [mapFilter,        setMapFilter]        = useState('Cuadrantes');
 
@@ -201,6 +201,7 @@ export default function Dashboard({ incidents, loading, updateStatus, refetch })
           incident={selectedIncident}
           onClose={() => setSelectedIncident(null)}
           onUpdateStatus={updateStatus}
+          onUpdateQuadrant={updateQuadrant}
         />
       )}
     </div>

@@ -1366,6 +1366,21 @@ h4 { font-size: 0.875rem; } /* 14px */
   font-size: 0.75rem;
 }
 
+.login-success {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: rgba(22, 163, 74, 0.15);
+  border: 1px solid rgba(22, 163, 74, 0.35);
+  border-radius: var(--radius-md);
+  color: #6ee7a0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  animation: fadeInUp 200ms ease forwards;
+  margin-bottom: 8px;
+}
+
 .login-btn {
   width: 100%;
   padding: 12px;
