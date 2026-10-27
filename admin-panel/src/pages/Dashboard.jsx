@@ -18,7 +18,7 @@ function KpiCard({ label, value, valueClass, sub, badge, badgeClass, accentColor
           <span className={`kpi-badge ${badgeClass}`}>{badge}</span>
         )}
       </div>
-      <div style={{ position: 'relative', height: 40, display: 'flex', alignItems: 'flex-end' }}>
+      <div style={{ position: 'relative', height: 70, display: 'flex', alignItems: 'flex-end' }}>
         <span className={`kpi-value ${valueClass || ''}`}>{value}</span>
         {bars && (
           <div className="kpi-bar-container">

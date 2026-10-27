@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:bugareport/config/tema_app.dart';
+import 'package:bugareport/config/rutas_app.dart';
 import 'package:bugareport/modelos/incidente.dart';
 import 'package:bugareport/servicios/servicio_incidentes.dart';
 import 'package:bugareport/servicios/servicio_ubicacion.dart';
@@ -278,9 +279,13 @@ class _EstadoPantallaNuevoReporte extends State<PantallaNuevoReporte> {
         return;
       }
 
-      // Obtener ID del usuario actual
+      // Verificar que el usuario esté autenticado
       final supaUser = Supabase.instance.client.auth.currentUser;
-      final idUsuario = supaUser?.id ?? 'anonimo';
+      if (supaUser == null) {
+        if (mounted) _mostrarDialogoSinSesion();
+        return;
+      }
+      final idUsuario = supaUser.id;
 
       // 1. Subir foto a Supabase Storage
       String urlFoto;
@@ -302,7 +307,7 @@ class _EstadoPantallaNuevoReporte extends State<PantallaNuevoReporte> {
 
       final nuevoIncidente = Incidente(
         id: '',
-        idUsuario: supaUser?.id,
+        idUsuario: supaUser.id,
         categoria: _categoriaSeleccionada,
         severidad: _severidadSeleccionada,
         titulo: titulo,
@@ -415,6 +420,111 @@ class _EstadoPantallaNuevoReporte extends State<PantallaNuevoReporte> {
       ),
     );
   }
+
+  /// Diálogo que se muestra cuando el ciudadano intenta enviar un reporte
+  /// sin haber iniciado sesión.
+  void _mostrarDialogoSinSesion() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+
+            // Icono de advertencia
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: ColoresApp.advertenciaFondo,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.lock_outline_rounded,
+                size: 38,
+                color: ColoresApp.advertencia,
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            Text(
+              'Inicia sesión para continuar',
+              style: GoogleFonts.montserrat(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: ColoresApp.sobreSuperficie,
+              ),
+              textAlign: TextAlign.center,
+            ),
+
+            const SizedBox(height: 8),
+
+            Text(
+              'No puedes enviar reportes porque no te has registrado o iniciado sesión en el sistema.',
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                color: ColoresApp.sobreSuperficieVariante,
+                height: 1.5,
+              ),
+              textAlign: TextAlign.center,
+            ),
+
+            const SizedBox(height: 20),
+
+            // Botón principal: Ir al login
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.of(ctx).pop(); // cierra el diálogo
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    RutasApp.login,
+                    (route) => false, // limpia el stack completo
+                  );
+                },
+                icon: const Icon(Icons.login_rounded, size: 18),
+                label: Text(
+                  'Ir al login',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ColoresApp.primarioOscuro,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            // Botón secundario: Cancelar
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(
+                'Cancelar',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  color: ColoresApp.sobreSuperficieVariante,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
 
   void _mostrarSnackBar(String mensaje, {required bool esError}) {
     if (!mounted) return;
