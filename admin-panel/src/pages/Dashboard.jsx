@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import MapConsole from '../components/map/MapConsole.jsx';
 import IncidentDrawer from '../components/incidents/IncidentDrawer.jsx';
 import { StatusBadge } from '../components/ui/Badge.jsx';
@@ -38,26 +38,31 @@ function KpiCard({ label, value, valueClass, sub, badge, badgeClass, accentColor
 }
 
 export default function Dashboard({ incidents, loading, updateStatus, updateQuadrant, refetch }) {
-  const [selectedIncident, setSelectedIncident] = useState(null);
-  const [mapFilter,        setMapFilter]        = useState('Cuadrantes');
+  const [selectedId,  setSelectedId]  = useState(null);  // solo guardamos el ID
+  const [mapFilter,   setMapFilter]   = useState('Cuadrantes');
 
-  // Métricas 100% dinámicas desde datos reales
+  // El incidente abierto siempre apunta al dato mÃ¡s fresco del array (Realtime)
+  const selectedIncident = selectedId
+    ? (incidents.find(i => i.id === selectedId) ?? null)
+    : null;
+
+  // MÃ©tricas 100% dinÃ¡micas desde datos reales
   const m = calcMetrics(incidents);
 
   // Badge de "reportes hoy"
   const hoyBadge = m.reportesHoy > 0 ? `+${m.reportesHoy} hoy` : 'Sin reportes hoy';
 
-  // Badge de "críticos hoy"
-  const criticosBadge = m.criticosHoy > 0 ? `+${m.criticosHoy} hoy` : 'Sin críticos hoy';
+  // Badge de "crÃ­ticos hoy"
+  const criticosBadge = m.criticosHoy > 0 ? `+${m.criticosHoy} hoy` : 'Sin crÃ­ticos hoy';
 
-  // Badge de "promedio de resolución"
+  // Badge de "promedio de resoluciÃ³n"
   const promedioBadge = m.promedioHrs != null ? `${m.promedioHrs} hrs promedio` : 'Sin datos';
 
   const recent = incidents.slice(0, 8);
 
   return (
     <div className="page-content">
-      {/* ROW 1 — KPI Cards */}
+      {/* ROW 1 â€” KPI Cards */}
       <div className="kpi-grid">
         <KpiCard
           label="Total reportes"
@@ -78,7 +83,7 @@ export default function Dashboard({ incidents, loading, updateStatus, updateQuad
           valueClass="orange"
         />
         <KpiCard
-          label="Críticos"
+          label="CrÃ­ticos"
           value={m.criticos}
           badge={criticosBadge}
           badgeClass="red"
@@ -92,13 +97,13 @@ export default function Dashboard({ incidents, loading, updateStatus, updateQuad
           value={m.resueltos}
           badge={promedioBadge}
           badgeClass="green"
-          sub="Cerrados con verificación ciudadana"
+          sub="Cerrados con verificaciÃ³n ciudadana"
           bars={[50, 65, 75, 80, 85, 90, 95]}
           valueClass="green"
         />
       </div>
 
-      {/* ROW 2 — Mapa + Lista reciente */}
+      {/* ROW 2 â€” Mapa + Lista reciente */}
       <div className="bento-grid">
         {/* Mapa */}
         <div className="bento-col-8">
@@ -112,9 +117,9 @@ export default function Dashboard({ incidents, loading, updateStatus, updateQuad
                   <IconMap size={14} style={{ color: 'var(--bg-header)' }} />
                 </div>
                 <div>
-                  <div className="card-title">Mapa en tiempo real — Cuadrantes Urbanos</div>
+                  <div className="card-title">Mapa en tiempo real â€” Cuadrantes Urbanos</div>
                   <div className="card-subtitle">
-                    Guadalajara de Buga · Q-01 a Q-14 · Malla vial y equipamiento
+                    Guadalajara de Buga Â· Q-01 a Q-14 Â· Malla vial y equipamiento
                   </div>
                 </div>
               </div>
@@ -138,7 +143,7 @@ export default function Dashboard({ incidents, loading, updateStatus, updateQuad
                 <span className="loading-spinner" />
               </div>
             ) : (
-              <MapConsole incidents={incidents} onSelectIncident={setSelectedIncident} />
+              <MapConsole incidents={incidents} onSelectIncident={(inc) => setSelectedId(inc.id)} />
             )}
           </div>
         </div>
@@ -162,7 +167,7 @@ export default function Dashboard({ incidents, loading, updateStatus, updateQuad
               {!loading && recent.length === 0 && (
                 <div className="empty-state">
                   <div className="empty-state-title">Sin incidentes</div>
-                  <div className="empty-state-sub">Los reportes ciudadanos aparecerán aquí en tiempo real</div>
+                  <div className="empty-state-sub">Los reportes ciudadanos aparecerÃ¡n aquÃ­ en tiempo real</div>
                 </div>
               )}
 
@@ -170,7 +175,7 @@ export default function Dashboard({ incidents, loading, updateStatus, updateQuad
                 <div
                   key={inc.id}
                   className="recent-item"
-                  onClick={() => setSelectedIncident(inc)}
+                  onClick={() => setSelectedId(inc.id)}
                 >
                   <div
                     className="recent-item-color"
@@ -181,7 +186,7 @@ export default function Dashboard({ incidents, loading, updateStatus, updateQuad
                     <div className="recent-item-title">{inc.title}</div>
                     <div className="recent-item-loc">
                       <IconLocation size={9} />
-                      {inc.quadrant || '—'} · {inc.address?.split(',')[0] || '—'}
+                      {inc.quadrant || 'â€”'} Â· {inc.address?.split(',')[0] || 'â€”'}
                     </div>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
@@ -199,7 +204,7 @@ export default function Dashboard({ incidents, loading, updateStatus, updateQuad
       {selectedIncident && (
         <IncidentDrawer
           incident={selectedIncident}
-          onClose={() => setSelectedIncident(null)}
+          onClose={() => setSelectedId(null)}
           onUpdateStatus={updateStatus}
           onUpdateQuadrant={updateQuadrant}
         />
@@ -207,3 +212,4 @@ export default function Dashboard({ incidents, loading, updateStatus, updateQuad
     </div>
   );
 }
+
