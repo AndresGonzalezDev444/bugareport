@@ -2,11 +2,11 @@ import { useState } from 'react';
 import MapConsole from '../components/map/MapConsole.jsx';
 import IncidentDrawer from '../components/incidents/IncidentDrawer.jsx';
 import { StatusBadge } from '../components/ui/Badge.jsx';
-import { IconLocation, IconRefresh, IconMap } from '../components/ui/Icons.jsx';
+import { IconLocation, IconRefresh } from '../components/ui/Icons.jsx';
 import { SEVERITY_COLOR, timeAgo, incidentId } from '../utils/statusHelpers.js';
 import { calcMetrics } from '../utils/metricsHelpers.js';
 
-function KpiCard({ label, value, valueClass, sub, badge, badgeClass, accentColor, bars }) {
+function KpiCard({ label, value, sub, badge, badgeClass, accentColor, icon }) {
   return (
     <div
       className={`kpi-card${accentColor ? ' critical' : ''}`}
@@ -14,24 +14,14 @@ function KpiCard({ label, value, valueClass, sub, badge, badgeClass, accentColor
     >
       <div className="kpi-card-top">
         <span className="kpi-label">{label}</span>
-        {badge != null && (
-          <span className={`kpi-badge ${badgeClass}`}>{badge}</span>
+        {icon && (
+          <img src={icon} alt="" aria-hidden="true" className="kpi-card-icon" />
         )}
       </div>
-      <div style={{ position: 'relative', height: 40, display: 'flex', alignItems: 'flex-end' }}>
-        <span className={`kpi-value ${valueClass || ''}`}>{value}</span>
-        {bars && (
-          <div className="kpi-bar-container">
-            {bars.map((h, i) => (
-              <div
-                key={i}
-                className="kpi-bar"
-                style={{ height: `${h}%`, background: accentColor || 'var(--color-success)' }}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+      <span className="kpi-value">{value}</span>
+      {badge != null && (
+        <span className={`kpi-badge ${badgeClass}`}>{badge}</span>
+      )}
       {sub && <div className="kpi-sub">{sub}</div>}
     </div>
   );
@@ -65,7 +55,7 @@ export default function Dashboard({ incidents, loading, updateStatus, updateQuad
           badge={hoyBadge}
           badgeClass="green"
           sub="Registrados en el sistema"
-          bars={[30, 45, 60, 50, 80, 70, 100]}
+          icon="/assets/images/reportes-icon.svg"
         />
         <KpiCard
           label="Pendientes"
@@ -73,8 +63,7 @@ export default function Dashboard({ incidents, loading, updateStatus, updateQuad
           badge={`${m.enProceso} en proceso`}
           badgeClass="blue"
           sub="Sin validar o sin cuadrilla asignada"
-          bars={[60, 50, 70, 55, 65, 60, 75]}
-          valueClass="orange"
+          icon="/assets/images/revision-icon.svg"
         />
         <KpiCard
           label="Criticos"
@@ -82,9 +71,7 @@ export default function Dashboard({ incidents, loading, updateStatus, updateQuad
           badge={criticosBadge}
           badgeClass="red"
           sub="Prioridad inmediata de despacho"
-          bars={[40, 55, 50, 70, 65, 80, 85]}
-          accentColor="var(--color-primary-muted)"
-          valueClass="red"
+          icon="/assets/images/alert-icon.svg"
         />
         <KpiCard
           label="Resueltos"
@@ -92,8 +79,7 @@ export default function Dashboard({ incidents, loading, updateStatus, updateQuad
           badge={promedioBadge}
           badgeClass="green"
           sub="Cerrados con verificacion ciudadana"
-          bars={[50, 65, 75, 80, 85, 90, 95]}
-          valueClass="green"
+          icon="/assets/images/resueltos-icon.svg"
         />
       </div>
 
@@ -103,18 +89,10 @@ export default function Dashboard({ incidents, loading, updateStatus, updateQuad
         <div className="bento-col-8">
           <div className="card" style={{ overflow: 'hidden' }}>
             <div className="card-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{
-                  background: 'var(--color-navy)', borderRadius: 8,
-                  padding: '8px 8px 13px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  <IconMap size={14} style={{ color: 'var(--bg-header)' }} />
-                </div>
-                <div>
-                  <div className="card-title">Mapa en tiempo real - Cuadrantes Urbanos</div>
-                  <div className="card-subtitle">
-                    Guadalajara de Buga &middot; Q-01 a Q-14 &middot; Malla vial y equipamiento
-                  </div>
+              <div>
+                <div className="card-title">Mapa en tiempo real - Cuadrantes Urbanos</div>
+                <div className="card-subtitle">
+                  Guadalajara de Buga &middot; Q-01 a Q-14 &middot; Malla vial y equipamiento
                 </div>
               </div>
               <div className="map-controls">

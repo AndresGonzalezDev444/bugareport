@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth, AuthProvider } from './hooks/useAuth.jsx';
 import { useIncidents } from './hooks/useIncidents.js';
@@ -27,12 +28,33 @@ export default function App() {
     refetch, updateStatus, updateQuadrant, isDemo
   } = useIncidents();
 
+  // ── Tema claro / oscuro ───────────────────────────────────────────
+  // Persiste en localStorage para recordar la preferencia del usuario
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem('br-theme') === 'dark';
+  });
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('br-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('br-theme', 'light');
+    }
+  }, [darkMode]);
+
+  const toggleDark = () => setDarkMode(prev => !prev);
+
+  // ── Props compartidos para el Layout ─────────────────────────────
   const layoutProps = {
     onLogout: logout,
     lastUpdate,
     onRefresh: refetch,
     isDemo,
     incidents,
+    darkMode,
+    onToggleDark: toggleDark,
   };
 
   return (

@@ -1,5 +1,22 @@
-// Librería de iconos SVG inline — sin emojis en todo el panel
+// Libreria de iconos SVG inline — sin emojis en todo el panel
 // Todos los iconos son vectores escalables con currentColor
+
+export function IconSun({ size = 14, className = '' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 14 14" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+      <circle cx="7" cy="7" r="2.5" stroke="currentColor" strokeWidth="1.3" fill="none"/>
+      <path d="M7 1.5V2.5M7 11.5V12.5M1.5 7H2.5M11.5 7H12.5M3.4 3.4l.7.7M9.9 9.9l.7.7M10.6 3.4l-.7.7M4.1 9.9l-.7.7" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+export function IconMoon({ size = 14, className = '' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 14 14" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+      <path d="M11.5 8.5A5 5 0 0 1 5.5 2.5a5 5 0 1 0 6 6Z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+    </svg>
+  );
+}
 
 export function IconDashboard({ size = 16, className = '' }) {
   return (

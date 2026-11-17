@@ -34,7 +34,7 @@ body {
   --color-navy:             #131A36;
   --color-navy-mid:         #1C2347;
 
-  /* Éxito / Verde */
+  /* Exito / Verde */
   --color-success:          #003223;
   --color-success-mid:      #2E5D4B;
   --color-success-light:    #EAF2EE;
@@ -47,12 +47,12 @@ body {
   --color-warning-light:    #FFF0E0;
   --color-warning-bright:   #E8760A;
 
-  /* Error / Crítico */
+  /* Error / Critico */
   --color-danger:           #BA1A1A;
   --color-danger-light:     #FFB3B1;
   --color-danger-pale:      #FFDAD6;
 
-  /* Púrpura / Acento UI */
+  /* Purpura / Acento UI */
   --color-purple:           #4B4ECC;
   --color-purple-light:     #F3F2FF;
   --color-purple-mid:       #ECEDFF;
@@ -95,6 +95,60 @@ body {
   --transition-fast:        150ms ease;
   --transition-base:        200ms ease;
   --transition-slow:        300ms ease;
+}
+
+/* ── TEMA OSCURO ─────────────────────────────────────────────────── */
+/* Se activa con data-theme="dark" en <html> via toggleDark() en App */
+[data-theme="dark"] {
+  --color-primary:          #fcfcfc;
+  --color-primary-dark:     #C0444E;
+  --color-primary-muted:    #d38f95;
+  --color-primary-light:    rgba(232, 112, 122, 0.12);
+  --color-primary-ghost:    rgba(232, 112, 122, 0.08);
+
+  --color-navy:             #A8B4D8;
+  --color-navy-mid:         #8090C0;
+
+  --color-success:          #4EAD84;
+  --color-success-mid:      #4EAD84;
+  --color-success-light:    rgba(78, 173, 132, 0.12);
+  --color-success-lighter:  rgba(78, 173, 132, 0.25);
+  --color-success-pale:     rgba(78, 173, 132, 0.06);
+
+  --color-warning:          #F0A44A;
+  --color-warning-mid:      #F0A44A;
+  --color-warning-light:    rgba(240, 164, 74, 0.12);
+  --color-warning-bright:   #F0A44A;
+
+  --color-danger:           #F28080;
+  --color-danger-light:     rgba(242, 128, 128, 0.2);
+  --color-danger-pale:      rgba(242, 128, 128, 0.12);
+
+  --color-purple:           #8B8EE8;
+  --color-purple-light:     rgba(139, 142, 232, 0.1);
+  --color-purple-mid:       rgba(139, 142, 232, 0.1);
+  --color-purple-border:    rgba(139, 142, 232, 0.15);
+
+  --color-text-dark:        #E8E4F0;
+  --color-text-main:        #C4BAC8;
+  --color-text-muted:       #8A8098;
+  --color-text-white:       #FFFFFF;
+
+  --bg-main:                #0F1120;
+  --bg-card:                #181B2E;
+  --bg-header:              #13162A;
+  --bg-sidebar:             #0D0F1E;
+  --bg-sidebar-hover:       rgba(255, 255, 255, 0.05);
+  --bg-sidebar-active:      rgba(232, 112, 122, 0.18);
+
+  --border-light:           rgba(255, 255, 255, 0.07);
+  --border-medium:          rgba(255, 255, 255, 0.08);
+  --border-soft:            rgba(255, 255, 255, 0.05);
+  --border-purple:          rgba(139, 142, 232, 0.15);
+
+  --shadow-card:            0px 1px 3px 0px rgba(0, 0, 0, 0.3);
+  --shadow-btn:             0px 1px 2px 0px rgba(0, 0, 0, 0.3);
+  --shadow-elevated:        0px 2px 8px -2px rgba(0,0,0,0.4), 0px 4px 12px -1px rgba(0,0,0,0.3);
 }
 
 /* 3. Tipografía */
@@ -192,6 +246,7 @@ h4 { font-size: 0.875rem; } /* 14px */
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
 }
 
@@ -200,6 +255,15 @@ h4 { font-size: 0.875rem; } /* 14px */
   height: 36px;
   object-fit: contain;
   flex-shrink: 0;
+}
+
+/* Logo centrado cuando no hay texto a su lado */
+.sidebar-logo-only {
+  width: 250px;
+  height: 250px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
 }
 
 .sidebar-brand-text {
@@ -365,6 +429,15 @@ h4 { font-size: 0.875rem; } /* 14px */
   letter-spacing: -0.025em;
 }
 
+/* Logo en el header (reemplaza al texto "BugaReport / Civic Console") */
+.header-logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: block;
+}
+
 .header-divider {
   width: 1px;
   height: 16px;
@@ -434,6 +507,14 @@ h4 { font-size: 0.875rem; } /* 14px */
 }
 
 .header-icon-btn:hover { background: var(--color-purple-mid); }
+
+/* Boton de cambio de tema: iluminado cuando el tema oscuro esta activo */
+.header-icon-btn.theme-toggle { transition: background var(--transition-fast), color var(--transition-base); }
+.header-icon-btn.theme-toggle:hover { background: var(--color-purple-mid); }
+.header-icon-btn.theme-toggle.dark-active {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
 
 .notif-dot {
   position: absolute;
@@ -506,9 +587,6 @@ h4 { font-size: 0.875rem; } /* 14px */
   box-shadow: var(--shadow-elevated);
 }
 
-.kpi-card.critical {
-  border-left: 4px solid var(--color-primary-muted);
-}
 
 .kpi-card-top {
   display: flex;
@@ -523,47 +601,49 @@ h4 { font-size: 0.875rem; } /* 14px */
   color: var(--color-text-main);
 }
 
-.kpi-badge {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  border-radius: var(--radius-pill);
-  font-size: 0.6875rem;
-  font-weight: 500;
+/* Icono imagen en la esquina superior derecha de la KPI card */
+.kpi-card-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
+  opacity: 0.18;
+  /* Convierte el negro del SVG al color de texto principal */
+  filter: invert(0) brightness(0);
+  transition: opacity var(--transition-base);
 }
 
-.kpi-badge.green  { background: var(--color-success-light); color: var(--color-success-mid); }
-.kpi-badge.blue   { background: #EBF2F9; color: #2B5C8F; }
-.kpi-badge.red    { background: var(--color-primary-light); color: var(--color-primary-muted); }
+.kpi-card:hover .kpi-card-icon {
+  opacity: 0.28;
+}
+
+/* En tema oscuro los SVGs negros se invierten a blanco */
+[data-theme="dark"] .kpi-card-icon {
+  filter: invert(1) brightness(2);
+  opacity: 0.22;
+}
+
+.kpi-badge {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--color-text-muted);
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+.kpi-badge.green  { color: var(--color-text-muted); }
+.kpi-badge.blue   { color: var(--color-text-muted); }
+.kpi-badge.red    { color: var(--color-text-muted); }
 
 .kpi-value {
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   font-size: 2rem;
   line-height: 2.5rem;
-  color: var(--color-navy);
-}
-
-.kpi-value.red     { color: var(--color-primary-muted); }
-.kpi-value.green   { color: var(--color-success); }
-.kpi-value.orange  { color: var(--color-warning); }
-
-.kpi-bar-container {
-  display: flex;
-  align-items: flex-end;
-  gap: 4px;
-  height: 24px;
-  width: 80px;
-  position: absolute;
-  right: 16px;
-  bottom: 44px;
-}
-
-.kpi-bar {
-  flex: 1;
-  border-radius: 4px 4px 0 0;
-  min-height: 8px;
+  color: var(--color-text-dark);
+  margin: 8px 0 4px;
 }
 
 .kpi-sub {
@@ -1247,7 +1327,7 @@ h4 { font-size: 0.875rem; } /* 14px */
   overflow: hidden;
 }
 
-/* 18. Login */
+/* 18. Login (legacy — mantenido para compatibilidad) */
 .login-page {
   min-height: 100vh;
   display: flex;
@@ -1429,6 +1509,451 @@ h4 { font-size: 0.875rem; } /* 14px */
   transition: color var(--transition-fast);
 }
 .toggle-pass:hover { color: rgba(255,255,255,0.7); }
+
+/* ═══════════════════════════════════════════════════════════════
+   18b. Login V2 — Diseño de dos columnas (imagen + formulario)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Variables de tema para el login */
+.login-page-v2 {
+  --lv2-right-bg:        #F5F0E8;
+  --lv2-text-primary:    #2C1810;
+  --lv2-text-secondary:  #6B4C3B;
+  --lv2-text-muted:      #9A7B6C;
+  --lv2-input-bg:        #EDE8DF;
+  --lv2-input-border:    #D4C4B8;
+  --lv2-input-focus:     #8B2635;
+  --lv2-input-text:      #2C1810;
+  --lv2-input-ph:        #A08070;
+  --lv2-icon-color:      #8B6555;
+  --lv2-btn-bg:          #8B2635;
+  --lv2-btn-bg-hover:    #6D1E28;
+  --lv2-btn-text:        #FFFFFF;
+  --lv2-toggle-bg:       #EDE8DF;
+  --lv2-toggle-border:   #D4C4B8;
+  --lv2-toggle-active:   #FFFFFF;
+  --lv2-footer-color:    #A08070;
+  --lv2-panel-label:     #8B2635;
+  --lv2-error-bg:        rgba(186, 26, 26, 0.08);
+  --lv2-error-border:    rgba(186, 26, 26, 0.25);
+  --lv2-error-text:      #BA1A1A;
+}
+
+/* Tema oscuro */
+.login-page-v2.dark {
+  --lv2-right-bg:        #1A1210;
+  --lv2-text-primary:    #F0E8E0;
+  --lv2-text-secondary:  #C8A898;
+  --lv2-text-muted:      #8A6A5A;
+  --lv2-input-bg:        #2A1E1A;
+  --lv2-input-border:    #3D2820;
+  --lv2-input-focus:     #C4455A;
+  --lv2-input-text:      #F0E8E0;
+  --lv2-input-ph:        #6A4A3A;
+  --lv2-icon-color:      #C89080;
+  --lv2-btn-bg:          #8B2635;
+  --lv2-btn-bg-hover:    #A83040;
+  --lv2-btn-text:        #FFFFFF;
+  --lv2-toggle-bg:       #2A1E1A;
+  --lv2-toggle-border:   #3D2820;
+  --lv2-toggle-active:   #3D2820;
+  --lv2-footer-color:    #6A4A3A;
+  --lv2-panel-label:     #C4455A;
+  --lv2-error-bg:        rgba(186, 26, 26, 0.18);
+  --lv2-error-border:    rgba(186, 26, 26, 0.4);
+  --lv2-error-text:      #FF8A8A;
+}
+
+/* Contenedor principal: 2 columnas */
+.login-page-v2 {
+  min-height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ── Columna izquierda ── */
+.login-left {
+  flex: 0 0 50%;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) { .login-left { display: none; } }
+
+.login-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.login-left-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    160deg,
+    rgba(100, 20, 20, 0.72) 0%,
+    rgba(60, 10, 10, 0.80) 50%,
+    rgba(30, 5, 5, 0.88) 100%
+  );
+}
+
+.login-brand-block {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  padding: 0 40px 48px;
+  text-align: center;
+  gap: 5px;
+}
+
+.login-brand-logo {
+  width: 500px;
+  height: 500px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  margin-bottom: -150px;
+}
+
+/* Texto descriptivo bajo el logo */
+.login-brand-desc-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.login-brand-desc-main {
+  font-size: 0.75rem;
+  font-style: italic;
+  font-weight: 400;
+  color: rgba(255,255,255,0.60);
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+
+.login-brand-desc-sub {
+  font-size: 0.6875rem;
+  font-style: italic;
+  font-weight: 300;
+  color: rgba(255,255,255,0.38);
+  letter-spacing: 0.03em;
+  text-align: center;
+}
+
+/* Sponsor de la Alcaldía */
+.login-sponsor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.login-sponsor-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+}
+
+.login-sponsor-logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 999px;
+  padding: px 18px 8px 8px;
+  backdrop-filter: blur(8px);
+}
+
+.login-sponsor-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: white;
+  padding: 3px;
+  flex-shrink: 0;
+}
+
+.login-sponsor-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.35;
+}
+
+.login-brand-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+.login-brand-tagline {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.80);
+  letter-spacing: 0.04em;
+}
+
+.login-brand-desc {
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.6;
+  margin-top: 8px;
+}
+
+/* ── Columna derecha ── */
+.login-right {
+  flex: 0 0 50%;
+  background: var(--lv2-right-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: background var(--transition-slow);
+}
+
+@media (max-width: 768px) {
+  .login-right { flex: 1; }
+}
+
+/* Toggle sol/luna */
+.login-theme-toggle {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--lv2-toggle-bg);
+  border: 1px solid var(--lv2-toggle-border);
+  border-radius: 999px;
+  padding: 4px;
+  transition: background var(--transition-base), border-color var(--transition-base);
+}
+
+.theme-toggle-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--lv2-text-muted);
+  transition: all var(--transition-fast);
+}
+
+.theme-toggle-btn.active {
+  background: var(--lv2-toggle-active);
+  color: var(--lv2-text-primary);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}
+
+.login-page-v2.dark .theme-toggle-btn.active {
+  color: #F0E8E0;
+}
+
+/* Wrapper del formulario */
+.login-form-wrapper {
+  width: 100%;
+  max-width: 420px;
+  padding: 0 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (max-width: 480px) {
+  .login-form-wrapper { padding: 0 24px; }
+}
+
+/* Encabezado del formulario */
+.login-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login-hello {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2.75rem;
+  font-weight: 800;
+  color: var(--lv2-text-primary);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  transition: color var(--transition-base);
+}
+
+.login-panel-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lv2-panel-label);
+  transition: color var(--transition-base);
+}
+
+/* Formulario V2 */
+.login-form-v2 {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.login-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--lv2-input-bg);
+  border: 1.5px solid var(--lv2-input-border);
+  border-radius: 999px;
+  transition: border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.login-input-wrap:focus-within {
+  border-color: var(--lv2-input-focus);
+  box-shadow: 0 0 0 3px rgba(139, 38, 53, 0.12);
+}
+
+.login-input-wrap.error {
+  border-color: #BA1A1A;
+  box-shadow: 0 0 0 3px rgba(186, 26, 26, 0.10);
+}
+
+.login-input-icon {
+  color: var(--lv2-icon-color);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  transition: color var(--transition-base);
+}
+
+.login-input-wrap input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--lv2-input-text);
+  font-size: 0.9375rem;
+  font-family: 'Inter', sans-serif;
+  transition: color var(--transition-base);
+}
+
+.login-input-wrap input::placeholder {
+  color: var(--lv2-input-ph);
+}
+
+.login-toggle-pass {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--lv2-icon-color);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  transition: color var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.login-toggle-pass:hover {
+  color: var(--lv2-text-secondary);
+}
+
+/* Error V2 */
+.login-error-v2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--lv2-error-bg);
+  border: 1px solid var(--lv2-error-border);
+  border-radius: var(--radius-md);
+  color: var(--lv2-error-text);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+/* Success V2 */
+.login-success-v2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: rgba(22, 163, 74, 0.1);
+  border: 1px solid rgba(22, 163, 74, 0.3);
+  border-radius: var(--radius-lg);
+  color: #16a34a;
+  font-size: 0.875rem;
+  font-weight: 600;
+  animation: fadeInUp 200ms ease forwards;
+}
+
+.login-page-v2.dark .login-success-v2 {
+  color: #6ee7a0;
+}
+
+/* Botón submit V2 */
+.login-submit-btn {
+  width: 100%;
+  padding: 15px 24px;
+  background: var(--lv2-btn-bg);
+  color: var(--lv2-btn-text);
+  border: none;
+  border-radius: 999px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+  box-shadow: 0 4px 16px rgba(139, 38, 53, 0.35);
+  letter-spacing: 0.02em;
+  margin-top: 4px;
+}
+
+.login-submit-btn:hover:not(:disabled) {
+  background: var(--lv2-btn-bg-hover);
+  box-shadow: 0 6px 20px rgba(139, 38, 53, 0.45);
+  transform: translateY(-1px);
+}
+
+.login-submit-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Footer V2 */
+.login-footer-v2 {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--lv2-footer-color);
+  transition: color var(--transition-base);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 /* 19. Mapa principal */
 .bento-grid {

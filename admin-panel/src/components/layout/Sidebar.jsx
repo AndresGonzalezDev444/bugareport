@@ -22,17 +22,13 @@ export default function Sidebar({ onLogout, incidentCount }) {
 
   return (
     <aside className="sidebar">
-      {/* Brand */}
+      {/* Brand — solo logo, sin texto */}
       <div className="sidebar-brand">
         <img
           src="/assets/images/logo-buga-report.png"
           alt="BugaReport"
-          className="sidebar-logo"
+          className="sidebar-logo-only"
         />
-        <div>
-          <div className="sidebar-brand-text">BugaReport</div>
-          <div className="sidebar-brand-sub">Civic Console</div>
-        </div>
       </div>
 
       {/* Navegación */}
