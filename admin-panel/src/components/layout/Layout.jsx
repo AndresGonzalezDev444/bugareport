@@ -1,7 +1,10 @@
 import Sidebar from './Sidebar.jsx';
 import Header from './Header.jsx';
 
-export default function Layout({ children, onLogout, lastUpdate, onRefresh, isDemo, incidents, darkMode, onToggleDark }) {
+export default function Layout({
+  children, onLogout, lastUpdate, onRefresh, isDemo, incidents, darkMode, onToggleDark,
+  notifications, noLeidas, onMarcarLeida, onMarcarTodas, onEliminarNotif,
+}) {
   const pendingCount = incidents?.filter(i => i.status === 'pendiente').length || 0;
 
   return (
@@ -14,6 +17,11 @@ export default function Layout({ children, onLogout, lastUpdate, onRefresh, isDe
           isDemo={isDemo}
           darkMode={darkMode}
           onToggleDark={onToggleDark}
+          notifications={notifications}
+          noLeidas={noLeidas}
+          onMarcarLeida={onMarcarLeida}
+          onMarcarTodas={onMarcarTodas}
+          onEliminarNotif={onEliminarNotif}
         />
         {children}
       </main>

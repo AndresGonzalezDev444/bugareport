@@ -3,7 +3,10 @@ import IncidentTable from '../components/incidents/IncidentTable.jsx';
 import IncidentDrawer from '../components/incidents/IncidentDrawer.jsx';
 import { IconRefresh } from '../components/ui/Icons.jsx';
 
-export default function IncidentsPage({ incidents, loading, updateStatus, updateQuadrant, refetch }) {
+export default function IncidentsPage({
+  incidents, loading, updateStatus, updateQuadrant, refetch,
+  onRegistrarAccion, getHistorial, onAsignar, onRemoverAsignacion, getAsignaciones, staff, allIncidents,
+}) {
   const [selected, setSelected] = useState(null);
 
   // Sincronizar el incidente seleccionado con los datos actualizados en tiempo real
@@ -45,6 +48,13 @@ export default function IncidentsPage({ incidents, loading, updateStatus, update
           onClose={() => setSelected(null)}
           onUpdateStatus={updateStatus}
           onUpdateQuadrant={updateQuadrant}
+          onRegistrarAccion={onRegistrarAccion}
+          getHistorial={getHistorial}
+          onAsignar={onAsignar}
+          onRemoverAsignacion={onRemoverAsignacion}
+          getAsignaciones={getAsignaciones}
+          staff={staff}
+          allIncidents={allIncidents || incidents}
         />
       )}
     </>

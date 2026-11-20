@@ -15,8 +15,16 @@ export default function IncidentTable({ incidents = [], onSelectIncident }) {
   const [status,   setStatus]   = useState('');
   const [category, setCategory] = useState('');
   const [severity, setSeverity] = useState('');
+  const [quadrant, setQuadrant] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo,   setDateTo]   = useState('');
   const [sortCol,  setSortCol]  = useState('created_at');
   const [sortAsc,  setSortAsc]  = useState(false);
+
+  function clearFilters() {
+    setSearch(''); setStatus(''); setCategory(''); setSeverity('');
+    setQuadrant(''); setDateFrom(''); setDateTo('');
+  }
 
   function toggleSort(col) {
     if (sortCol === col) setSortAsc(a => !a);
@@ -29,6 +37,9 @@ export default function IncidentTable({ incidents = [], onSelectIncident }) {
     if (status)   result = result.filter(i => i.status   === status);
     if (category) result = result.filter(i => i.category === category);
     if (severity) result = result.filter(i => i.severity === severity);
+    if (quadrant) result = result.filter(i => i.quadrant === quadrant);
+    if (dateFrom) result = result.filter(i => new Date(i.created_at) >= new Date(dateFrom + 'T00:00:00'));
+    if (dateTo)   result = result.filter(i => new Date(i.created_at) <= new Date(dateTo   + 'T23:59:59'));
 
     result.sort((a, b) => {
       let va = a[sortCol], vb = b[sortCol];
@@ -39,7 +50,7 @@ export default function IncidentTable({ incidents = [], onSelectIncident }) {
       return 0;
     });
     return result;
-  }, [incidents, search, status, category, severity, sortCol, sortAsc]);
+  }, [incidents, search, status, category, severity, quadrant, dateFrom, dateTo, sortCol, sortAsc]);
 
   function SortArrow({ col }) {
     if (sortCol !== col) return <span style={{ opacity: 0.25, fontSize: '0.6rem' }}>↕</span>;
@@ -67,6 +78,35 @@ export default function IncidentTable({ incidents = [], onSelectIncident }) {
         <select className="select-filter" value={severity} onChange={e => setSeverity(e.target.value)}>
           {SEVERITY_OPTS.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
         </select>
+        {/* Filtros de fecha y cuadrante */}
+        <input
+          type="date"
+          value={dateFrom}
+          onChange={e => setDateFrom(e.target.value)}
+          className="select-filter"
+          title="Fecha desde"
+          style={{ fontSize: '0.8rem' }}
+        />
+        <input
+          type="date"
+          value={dateTo}
+          onChange={e => setDateTo(e.target.value)}
+          className="select-filter"
+          title="Fecha hasta"
+          style={{ fontSize: '0.8rem' }}
+        />
+        <select className="select-filter" value={quadrant} onChange={e => setQuadrant(e.target.value)}>
+          <option value="">Todos los cuadrantes</option>
+          {Array.from({ length: 14 }, (_, i) => {
+            const q = `Q-${String(i + 1).padStart(2, '0')}`;
+            return <option key={q} value={q}>{q}</option>;
+          })}
+        </select>
+        {(search || status || category || severity || quadrant || dateFrom || dateTo) && (
+          <button className="btn btn-ghost" onClick={clearFilters} style={{ fontSize: '0.75rem', padding: '5px 10px', whiteSpace: 'nowrap' }}>
+            Limpiar filtros
+          </button>
+        )}
         <span style={{ fontSize: '0.6875rem', color: 'var(--color-text-muted)', marginLeft: 'auto', whiteSpace: 'nowrap' }}>
           {filtered.length} de {incidents.length} reportes
         </span>

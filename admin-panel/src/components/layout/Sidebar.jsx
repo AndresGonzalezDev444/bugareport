@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   IconDashboard, IconMap, IconList, IconChart,
-  IconReport, IconLogout, IconSettings
+  IconReport, IconLogout, IconSettings, IconLocation, IconSquad
 } from '../ui/Icons.jsx';
 
 const NAV_ITEMS = [
@@ -10,6 +10,8 @@ const NAV_ITEMS = [
   { to: '/incidentes',label: 'Incidentes',    Icon: IconList,   badge: null },
   { to: '/metricas',  label: 'Métricas',      Icon: IconChart },
   { to: '/informes',  label: 'Informes',      Icon: IconReport },
+  { to: '/cuadrantes',label: 'Cuadrantes',    Icon: IconLocation },
+  { to: '/personal',  label: 'Personal',      Icon: IconSquad },
 ];
 
 export default function Sidebar({ onLogout, incidentCount }) {

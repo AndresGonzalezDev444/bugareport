@@ -1,16 +1,62 @@
 import { useState, useMemo } from 'react';
-import { IconDownload, IconCheck, IconLocation, IconCamera } from '../components/ui/Icons.jsx';
+import { jsPDF } from 'jspdf';
+import { IconDownload, IconCheck, IconLocation, IconCamera, IconFilter } from '../components/ui/Icons.jsx';
 import { StatusBadge, SeverityBadge, CategoryBadge } from '../components/ui/Badge.jsx';
 import { CATEGORY_COLOR, SEVERITY_COLOR, formatDate, incidentId } from '../utils/statusHelpers.js';
+import { queryIncidents, toCSVRows } from '../utils/queryService.js';
+
+const CATEGORY_LABEL_MAP = {
+  hueco_via: 'Hueco / Vía',
+  servicios_publicos: 'Serv. Públicos',
+  comunitario: 'Comunitario',
+  aseo_parques: 'Aseo y Parques',
+};
+
+const STATUS_LABEL_MAP = {
+  pendiente: 'Pendiente',
+  en_proceso: 'En proceso',
+  resuelto: 'Resuelto',
+};
 
 export default function ReportsPage({ incidents }) {
   const [selected, setSelected] = useState(new Set());
-  const [period, setPeriod]     = useState('Oct 2026');
 
+  // Filtros
+  const [filtroDesde,     setFiltroDesde]     = useState('');
+  const [filtroHasta,     setFiltroHasta]     = useState('');
+  const [filtroCategoria, setFiltroCategoria] = useState('');
+  const [filtroEstado,    setFiltroEstado]    = useState('');
+  const [filtroCuadrante, setFiltroCuadrante] = useState('');
+
+  // Solo incidentes validados (en_proceso o resuelto)
   const validated = useMemo(
     () => incidents.filter(i => i.status === 'en_proceso' || i.status === 'resuelto'),
     [incidents]
   );
+
+  // Aplicar filtros encima de los validados
+  const filtrados = useMemo(() => queryIncidents(validated, {
+    categoria:   filtroCategoria,
+    estado:      filtroEstado,
+    cuadrante:   filtroCuadrante,
+    fechaDesde:  filtroDesde,
+    fechaHasta:  filtroHasta,
+  }), [validated, filtroCategoria, filtroEstado, filtroCuadrante, filtroDesde, filtroHasta]);
+
+  const hayFiltros = filtroDesde || filtroHasta || filtroCategoria || filtroEstado || filtroCuadrante;
+
+  function limpiarFiltros() {
+    setFiltroDesde(''); setFiltroHasta('');
+    setFiltroCategoria(''); setFiltroEstado(''); setFiltroCuadrante('');
+  }
+
+  // Periodo descriptivo para el encabezado del informe
+  const periodoLabel = useMemo(() => {
+    if (filtroDesde && filtroHasta) return `${filtroDesde} — ${filtroHasta}`;
+    if (filtroDesde) return `Desde ${filtroDesde}`;
+    if (filtroHasta) return `Hasta ${filtroHasta}`;
+    return new Date().toLocaleDateString('es-CO', { month: 'long', year: 'numeric' });
+  }, [filtroDesde, filtroHasta]);
 
   function toggleSelect(id) {
     setSelected(prev => {
@@ -21,93 +67,125 @@ export default function ReportsPage({ incidents }) {
   }
 
   function toggleAll() {
-    if (selected.size === validated.length) {
+    if (selected.size === filtrados.length) {
       setSelected(new Set());
     } else {
-      setSelected(new Set(validated.map(i => i.id)));
+      setSelected(new Set(filtrados.map(i => i.id)));
     }
   }
 
-  const selectedIncidents = validated.filter(i => selected.has(i.id));
+  const selectedIncidents = filtrados.filter(i => selected.has(i.id));
 
+  // ── Exportar CSV ──────────────────────────────────────────────
   function exportCSV() {
-    const rows = [
-      ['ID', 'Título', 'Categoría', 'Severidad', 'Estado', 'Cuadrante', 'Dirección', 'Lat', 'Lon', 'Fecha'],
-      ...selectedIncidents.map(i => [
-        incidentId(i.id), i.title, i.category, i.severity,
-        i.status, i.quadrant || '', i.address || '',
-        i.latitude, i.longitude, formatDate(i.created_at),
-      ])
-    ];
-    const csv  = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const rows = toCSVRows(selectedIncidents);
+    const csv  = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
     a.href = url; a.download = `bugareport_incidentes_${Date.now()}.csv`;
     a.click(); URL.revokeObjectURL(url);
   }
 
+  // ── Generar PDF con jsPDF ─────────────────────────────────────
   function generatePDF() {
-    const win = window.open('', '_blank');
-    const html = `
-      <!DOCTYPE html>
-      <html lang="es">
-      <head>
-        <meta charset="UTF-8" />
-        <title>Informe Oficial BugaReport</title>
-        <style>
-          body { font-family: Arial, sans-serif; padding: 40px; color: #131A36; }
-          h1 { font-size: 20px; color: #5B0510; border-bottom: 2px solid #5B0510; padding-bottom: 8px; }
-          h2 { font-size: 14px; color: #131A36; margin-top: 20px; }
-          table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 11px; }
-          th { background: #131A36; color: white; padding: 6px 8px; text-align: left; }
-          td { padding: 5px 8px; border-bottom: 1px solid #eee; }
-          tr:nth-child(even) td { background: #f9f9f9; }
-          .footer { margin-top: 40px; font-size: 10px; color: #888; border-top: 1px solid #ddd; padding-top: 8px; }
-          .badge { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
-        </style>
-      </head>
-      <body>
-        <h1>BugaReport — Informe Oficial de Incidentes</h1>
-        <p style="font-size:12px;color:#564241;">
-          Generado: ${new Date().toLocaleString('es-CO')} &nbsp;|&nbsp;
-          Periodo: ${period} &nbsp;|&nbsp;
-          Validez Jurídica Municipal
-        </p>
-        <h2>Incidentes Seleccionados (${selectedIncidents.length})</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th><th>Título</th><th>Categoría</th><th>Severidad</th>
-              <th>Estado</th><th>Cuadrante</th><th>Coordenadas GPS</th><th>Fecha</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${selectedIncidents.map(i => `
-              <tr>
-                <td><strong>${incidentId(i.id)}</strong></td>
-                <td>${i.title}</td>
-                <td>${i.category}</td>
-                <td>${i.severity}</td>
-                <td>${i.status}</td>
-                <td>${i.quadrant || '—'}</td>
-                <td style="font-family:monospace;font-size:10px;">${i.latitude?.toFixed(5)}, ${i.longitude?.toFixed(5)}</td>
-                <td>${formatDate(i.created_at)}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-        <div class="footer">
-          Alcaldía Municipal de Guadalajara de Buga · Secretaría de Infraestructura y Servicios Públicos ·
-          Documento generado por BugaReport Civic Console v1.0
-        </div>
-      </body>
-      </html>
-    `;
-    win.document.write(html);
-    win.document.close();
-    win.print();
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pageW = 210;
+    const margin = 18;
+    const colW = pageW - margin * 2;
+
+    // Encabezado
+    doc.setFillColor(91, 5, 16);
+    doc.rect(0, 0, pageW, 28, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('BugaReport — Informe Oficial de Incidentes', margin, 11);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Generado: ${new Date().toLocaleString('es-CO')}  |  Periodo: ${periodoLabel}  |  Validez Juridica Municipal`, margin, 19);
+
+    // Subtitulo
+    doc.setTextColor(91, 5, 16);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Incidentes Seleccionados: ${selectedIncidents.length}`, margin, 36);
+
+    // Cabecera de tabla
+    let y = 44;
+    const cols = [
+      { label: 'ID',         w: 22 },
+      { label: 'Título',     w: 54 },
+      { label: 'Categoría',  w: 28 },
+      { label: 'Estado',     w: 24 },
+      { label: 'Cuadrante',  w: 22 },
+      { label: 'GPS',        w: 30 },
+      { label: 'Fecha',      w: 22 },
+    ];
+    const totalW = cols.reduce((s, c) => s + c.w, 0);
+
+    doc.setFillColor(19, 26, 54);
+    doc.rect(margin, y, totalW, 7, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'bold');
+    let cx = margin;
+    cols.forEach(col => {
+      doc.text(col.label, cx + 2, y + 5);
+      cx += col.w;
+    });
+    y += 7;
+
+    // Filas
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    selectedIncidents.forEach((inc, idx) => {
+      if (y > 268) {
+        doc.addPage();
+        y = 20;
+      }
+      const bg = idx % 2 === 0 ? [255, 255, 255] : [249, 249, 252];
+      doc.setFillColor(...bg);
+      doc.rect(margin, y, totalW, 7, 'F');
+      doc.setTextColor(19, 26, 54);
+
+      const values = [
+        incidentId(inc.id),
+        (inc.title || '').substring(0, 28),
+        CATEGORY_LABEL_MAP[inc.category] || inc.category || '',
+        STATUS_LABEL_MAP[inc.status]     || inc.status    || '',
+        inc.quadrant || '—',
+        `${inc.latitude?.toFixed(4) ?? '—'}, ${inc.longitude?.toFixed(4) ?? '—'}`,
+        formatDate(inc.created_at),
+      ];
+
+      cx = margin;
+      values.forEach((val, vi) => {
+        doc.text(String(val), cx + 2, y + 5);
+        cx += cols[vi].w;
+      });
+
+      // Línea separadora
+      doc.setDrawColor(230, 230, 235);
+      doc.line(margin, y + 7, margin + totalW, y + 7);
+      y += 7;
+    });
+
+    // Footer
+    y += 10;
+    if (y > 268) { doc.addPage(); y = 20; }
+    doc.setFontSize(7);
+    doc.setTextColor(140, 140, 140);
+    doc.text(
+      'Alcaldia Municipal de Guadalajara de Buga · Secretaria de Infraestructura y Servicios Publicos · BugaReport Civic Console v1.0',
+      margin, y
+    );
+
+    doc.save(`bugareport_informe_${Date.now()}.pdf`);
   }
+
+  // Cuadrantes disponibles en la lista actual
+  const cuadrantesDisponibles = [...new Set(validated.map(i => i.quadrant).filter(Boolean))].sort();
 
   return (
     <>
@@ -127,7 +205,7 @@ export default function ReportsPage({ incidents }) {
         <div className="page-actions">
           <button className="btn btn-outline-primary" onClick={exportCSV} disabled={selected.size === 0}>
             <IconDownload size={13} />
-            Exportar CSV / GeoJSON
+            Exportar CSV
           </button>
           <button className="btn btn-primary" onClick={generatePDF} disabled={selected.size === 0}>
             <IconDownload size={13} />
@@ -137,17 +215,59 @@ export default function ReportsPage({ incidents }) {
       </div>
 
       <div className="page-content" style={{ flex: 1 }}>
+        {/* Filtros de periodo y categoría */}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 14, padding: '10px 14px', background: 'var(--bg-header)', border: '1px solid var(--border-soft)', borderRadius: 'var(--radius-md)' }}>
+          <IconFilter size={13} style={{ color: 'var(--color-text-muted)' }} />
+          <input
+            type="date"
+            value={filtroDesde}
+            onChange={e => setFiltroDesde(e.target.value)}
+            className="select-filter"
+            title="Fecha desde"
+            style={{ fontSize: '0.8rem' }}
+          />
+          <input
+            type="date"
+            value={filtroHasta}
+            onChange={e => setFiltroHasta(e.target.value)}
+            className="select-filter"
+            title="Fecha hasta"
+            style={{ fontSize: '0.8rem' }}
+          />
+          <select className="select-filter" value={filtroCategoria} onChange={e => setFiltroCategoria(e.target.value)}>
+            <option value="">Todas las categorías</option>
+            {Object.entries(CATEGORY_LABEL_MAP).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+          </select>
+          <select className="select-filter" value={filtroEstado} onChange={e => setFiltroEstado(e.target.value)}>
+            <option value="">Todos los estados</option>
+            <option value="en_proceso">En proceso</option>
+            <option value="resuelto">Resuelto</option>
+          </select>
+          <select className="select-filter" value={filtroCuadrante} onChange={e => setFiltroCuadrante(e.target.value)}>
+            <option value="">Todos los cuadrantes</option>
+            {cuadrantesDisponibles.map(q => <option key={q} value={q}>{q}</option>)}
+          </select>
+          {hayFiltros && (
+            <button className="btn btn-ghost" onClick={limpiarFiltros} style={{ fontSize: '0.75rem', padding: '5px 10px' }}>
+              Limpiar filtros
+            </button>
+          )}
+          <span style={{ marginLeft: 'auto', fontSize: '0.6875rem', color: 'var(--color-text-muted)' }}>
+            {filtrados.length} de {validated.length} validados
+          </span>
+        </div>
+
         <div className="evidence-layout">
           {/* Panel izquierdo — lista de incidentes */}
           <div className="evidence-list-panel">
             <div className="evidence-list-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
                 <div
-                  className={`evidence-checkbox${selected.size === validated.length && validated.length > 0 ? ' checked' : ''}`}
+                  className={`evidence-checkbox${selected.size === filtrados.length && filtrados.length > 0 ? ' checked' : ''}`}
                   onClick={toggleAll}
                   style={{ cursor: 'pointer' }}
                 >
-                  {selected.size === validated.length && validated.length > 0 && (
+                  {selected.size === filtrados.length && filtrados.length > 0 && (
                     <IconCheck size={11} style={{ color: 'white' }} />
                   )}
                 </div>
@@ -155,11 +275,9 @@ export default function ReportsPage({ incidents }) {
                   Reportes seleccionados ({selected.size})
                 </span>
               </div>
-              <select className="select-filter" value={period} onChange={e => setPeriod(e.target.value)}>
-                <option>Oct 2026</option>
-                <option>Sep 2026</option>
-                <option>Ago 2026</option>
-              </select>
+              <span style={{ fontSize: '0.6875rem', color: 'var(--color-primary)', fontWeight: 600 }}>
+                {periodoLabel}
+              </span>
             </div>
 
             <div className="evidence-list-filter">
@@ -167,19 +285,19 @@ export default function ReportsPage({ incidents }) {
                 Filtro: Validados para Despacho
               </span>
               <span style={{ color: 'var(--color-primary)', fontWeight: 600, fontSize: '0.75rem' }}>
-                {selected.size}/{validated.length} seleccionados
+                {selected.size}/{filtrados.length} seleccionados
               </span>
             </div>
 
             <div className="evidence-list-body">
-              {validated.length === 0 && (
+              {filtrados.length === 0 && (
                 <div className="empty-state">
                   <IconCamera size={24} className="empty-state-icon" />
                   <div className="empty-state-title">Sin incidentes validados</div>
-                  <div className="empty-state-sub">Valida reportes desde la sección Incidentes</div>
+                  <div className="empty-state-sub">Valida reportes desde la sección Incidentes o ajusta los filtros</div>
                 </div>
               )}
-              {validated.map(inc => (
+              {filtrados.map(inc => (
                 <div
                   key={inc.id}
                   className={`evidence-card${selected.has(inc.id) ? ' selected' : ''}`}
@@ -192,7 +310,7 @@ export default function ReportsPage({ incidents }) {
                     {selected.has(inc.id) && <IconCheck size={11} style={{ color: 'white' }} />}
                   </div>
 
-                  {/* Thumbnail con badge de severidad */}
+                  {/* Thumbnail */}
                   <div style={{ position: 'relative', flexShrink: 0 }}>
                     {inc.photo_url ? (
                       <img src={inc.photo_url} alt="" className="evidence-thumb" />
@@ -266,14 +384,14 @@ export default function ReportsPage({ incidents }) {
                           BugaReport — Informe Oficial
                         </div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-                          Alcaldía Municipal de Guadalajara de Buga · {period}
+                          Alcaldía Municipal de Guadalajara de Buga · {periodoLabel}
                         </div>
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
                       {[
                         { label: 'Incidentes', val: selected.size },
-                        { label: 'Periodo', val: period },
+                        { label: 'Periodo', val: periodoLabel },
                         { label: 'Generado', val: new Date().toLocaleDateString('es-CO') },
                         { label: 'Validez', val: 'Jurídica Municipal' },
                       ].map(({ label, val }) => (

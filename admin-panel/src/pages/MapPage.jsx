@@ -3,7 +3,10 @@ import MapConsole from '../components/map/MapConsole.jsx';
 import IncidentDrawer from '../components/incidents/IncidentDrawer.jsx';
 import { IconRefresh } from '../components/ui/Icons.jsx';
 
-export default function MapPage({ incidents, loading, updateStatus }) {
+export default function MapPage({
+  incidents, loading, updateStatus, updateQuadrant,
+  onRegistrarAccion, getHistorial, onAsignar, onRemoverAsignacion, getAsignaciones, staff, allIncidents,
+}) {
   const [selected, setSelected] = useState(null);
   const [filter,   setFilter]   = useState('Cuadrantes');
 
@@ -48,6 +51,14 @@ export default function MapPage({ incidents, loading, updateStatus }) {
           incident={selected}
           onClose={() => setSelected(null)}
           onUpdateStatus={updateStatus}
+          onUpdateQuadrant={updateQuadrant}
+          onRegistrarAccion={onRegistrarAccion}
+          getHistorial={getHistorial}
+          onAsignar={onAsignar}
+          onRemoverAsignacion={onRemoverAsignacion}
+          getAsignaciones={getAsignaciones}
+          staff={staff}
+          allIncidents={allIncidents || incidents}
         />
       )}
     </>

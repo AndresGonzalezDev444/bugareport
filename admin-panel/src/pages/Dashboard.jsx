@@ -27,7 +27,10 @@ function KpiCard({ label, value, sub, badge, badgeClass, accentColor, icon }) {
   );
 }
 
-export default function Dashboard({ incidents, loading, updateStatus, updateQuadrant, refetch }) {
+export default function Dashboard({
+  incidents, loading, updateStatus, updateQuadrant, refetch,
+  onRegistrarAccion, getHistorial, onAsignar, onRemoverAsignacion, getAsignaciones, staff, allIncidents,
+}) {
   // Guardamos solo el ID — el objeto siempre apunta al dato mas fresco del Realtime
   const [selectedId, setSelectedId] = useState(null);
   const [mapFilter,  setMapFilter]  = useState('Cuadrantes');
@@ -179,6 +182,13 @@ export default function Dashboard({ incidents, loading, updateStatus, updateQuad
           onClose={() => setSelectedId(null)}
           onUpdateStatus={updateStatus}
           onUpdateQuadrant={updateQuadrant}
+          onRegistrarAccion={onRegistrarAccion}
+          getHistorial={getHistorial}
+          onAsignar={onAsignar}
+          onRemoverAsignacion={onRemoverAsignacion}
+          getAsignaciones={getAsignaciones}
+          staff={staff}
+          allIncidents={allIncidents || incidents}
         />
       )}
     </div>

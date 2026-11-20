@@ -1,5 +1,7 @@
-﻿import { useLocation } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { IconBell, IconChevronRight, IconRefresh, IconSun, IconMoon } from '../ui/Icons.jsx';
+import NotificationsPanel from './NotificationsPanel.jsx';
 
 const BREADCRUMBS = {
   '/':              [{ label: 'Dashboard' }],
@@ -8,15 +10,34 @@ const BREADCRUMBS = {
   '/metricas':      [{ label: 'Metricas y Reportes' }],
   '/informes':      [{ label: 'Metricas y Reportes' }, { label: 'Generador de Informes Oficiales' }],
   '/configuracion': [{ label: 'Configuracion' }],
+  '/cuadrantes':    [{ label: 'Cuadrantes' }],
+  '/personal':      [{ label: 'Control de Personal' }],
 };
 
-export default function Header({ lastUpdate, onRefresh, isDemo, darkMode, onToggleDark }) {
+export default function Header({
+  lastUpdate, onRefresh, isDemo, darkMode, onToggleDark,
+  notifications, noLeidas, onMarcarLeida, onMarcarTodas, onEliminarNotif,
+}) {
   const { pathname } = useLocation();
   const crumbs = BREADCRUMBS[pathname] || [{ label: 'Panel' }];
+  const [showNotifications, setShowNotifications] = useState(false);
+  const bellRef = useRef(null);
 
   const lastStr = lastUpdate
     ? lastUpdate.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
     : '-';
+
+  // Cierra el panel al hacer click fuera
+  useEffect(() => {
+    if (!showNotifications) return;
+    function handleClickOutside(e) {
+      if (bellRef.current && !bellRef.current.contains(e.target)) {
+        setShowNotifications(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showNotifications]);
 
   return (
     <header className="top-header">
@@ -64,10 +85,35 @@ export default function Header({ lastUpdate, onRefresh, isDemo, darkMode, onTogg
           <IconRefresh size={14} />
         </button>
 
-        <button className="header-icon-btn" title="Notificaciones">
-          <IconBell size={14} />
-          <span className="notif-dot" />
-        </button>
+        <div ref={bellRef} style={{ position: 'relative' }}>
+          <button
+            className="header-icon-btn"
+            title="Notificaciones"
+            onClick={() => setShowNotifications(prev => !prev)}
+          >
+            <IconBell size={14} />
+            {noLeidas > 0 && (
+              <span className="notif-dot" style={{
+                position: 'absolute',
+                top: 2, right: 2,
+                width: 7, height: 7,
+                borderRadius: '50%',
+                background: 'var(--color-primary)',
+                border: '1.5px solid var(--bg-header)',
+              }} />
+            )}
+          </button>
+          {showNotifications && (
+            <NotificationsPanel
+              notifications={notifications || []}
+              noLeidas={noLeidas || 0}
+              onMarcarLeida={onMarcarLeida}
+              onMarcarTodas={onMarcarTodas}
+              onEliminar={onEliminarNotif}
+              onClose={() => setShowNotifications(false)}
+            />
+          )}
+        </div>
 
         <button
           className={`header-icon-btn theme-toggle${darkMode ? ' dark-active' : ''}`}
